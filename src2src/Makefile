@@ -96,15 +96,14 @@ CLANG_LIBS := \
 
 # Internal paths in this project: where to find sources, and where to put
 # build artifacts.
-SRC_LLVM_DIR := src_llvm
-SRC_CLANG_DIR := src_clang
+SRC_DIR := src
 BUILDDIR := build
 
 #i	$(BUILDDIR)/jit_orc_run \
 .PHONY: all
 all: make_builddir \
 	emit_build_config \
-	$(BUILDDIR)/tooling_sample \
+	$(BUILDDIR)/instrument \
 
 
 .PHONY: emit_build_config
@@ -115,7 +114,7 @@ emit_build_config: make_builddir
 make_builddir:
 	@test -d $(BUILDDIR) || mkdir $(BUILDDIR)
 
-$(BUILDDIR)/tooling_sample: tooling_sample.cpp
+$(BUILDDIR)/instrument: src/instrument.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
