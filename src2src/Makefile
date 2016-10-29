@@ -103,7 +103,7 @@ BUILDDIR := build
 .PHONY: all
 all: make_builddir \
 	emit_build_config \
-	$(BUILDDIR)/instrument \
+	$(BUILDDIR)/tool \
 
 
 .PHONY: emit_build_config
@@ -114,9 +114,19 @@ emit_build_config: make_builddir
 make_builddir:
 	@test -d $(BUILDDIR) || mkdir $(BUILDDIR)
 
-$(BUILDDIR)/instrument: src/instrument.cpp
+$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/FunctionLogger
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
+
+
+$(BUILDDIR)/instrument: src/instrument.cpp src/FunctionLogger.hpp
+	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
+		 -o $@
+
+$(BUILDDIR)/FunctionLogger: src/FunctionLogger.cpp src/FunctionLogger.hpp
+	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
+		  -o $@
+
 
 .PHONY: clean
 clean:

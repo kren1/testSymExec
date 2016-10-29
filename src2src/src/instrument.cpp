@@ -1,12 +1,7 @@
-//------------------------------------------------------------------------------
-// Tooling sample. Demonstrates:
-//
-// * How to write a simple source tool using libTooling.
-// * How to use RecursiveASTVisitor to find interesting AST nodes.
-// * How to use the Rewriter API to rewrite the source code.
-//
-// Eli Bendersky (eliben@gmail.com)
-// This code is in the public domain
+//-----------------------------------------------------------------------------
+// *Adds logFunction() call at the start of every function.
+// *Symbolizes integers
+// *Removes calls to transparent_crc for those integers
 //------------------------------------------------------------------------------
 #include <sstream>
 #include <string>
@@ -23,6 +18,8 @@
 #include "clang/Tooling/Tooling.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "llvm/Support/raw_ostream.h"
+
+#include "FunctionLogger.hpp"
 
 using namespace clang;
 using namespace clang::driver;
@@ -156,29 +153,6 @@ private:
   ASTContext *Context;
 };
 
-
-class FunctionLogger : public RecursiveASTVisitor<FunctionLogger> {
-public:
-  FunctionLogger(Rewriter &R, ASTContext *C) : TheRewriter(R), Context(C) {}
-  
-    bool VisitFunctionDecl(FunctionDecl *f) {
-    // Only function definitions (with bodies), not declarations.
-        if (f->hasBody()) {
-            Stmt *FuncBody = f->getBody();
-            // Function name
-            DeclarationName DeclName = f->getNameInfo().getName();
-            std::string FuncName = DeclName.getAsString();
-            std::stringstream logFunction;
-            logFunction << "\n logFunction(\"" <<  FuncName << "\");\n";
-            TheRewriter.InsertText(FuncBody->getLocStart().getLocWithOffset(1), logFunction.str(), true, true);
-        }
-        return true;
-  }
-
-private:
-  Rewriter &TheRewriter;
-  ASTContext *Context;
-};
 
 
 
