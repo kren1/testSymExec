@@ -86,8 +86,9 @@ bool SymbolizeIntegers::VisitFunctionDecl(FunctionDecl *f) {
                                                 << size << " " 
                                                  << var_value << " " << "\n"
                                                ;
-            SSsymbolize << "\tsymbolize_and_constrain( &" << var_name << ", " 
-                                                   << size << ", \"" 
+            SSsymbolize << "\tsymbolize_and_constrain_s( &" << var_name << ", " 
+                                                   << size << ", " 
+                                                   << var_value  << ", \"" 
                                                    << var_name << "\");\n";
  
             printSymbolic << "print_symbolic(\""<< var_name  << "\", &" << var_name << ", " << size*8 << "); \n";

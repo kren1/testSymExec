@@ -12,7 +12,7 @@ bool FunctionLogger::VisitFunctionDecl(FunctionDecl *f) {
       DeclarationName DeclName = f->getNameInfo().getName();
       std::string FuncName = DeclName.getAsString();
       std::stringstream logFunction;
-      logFunction << "\n logFunctionyjj(\"" <<  FuncName << "\");\n";
+      logFunction << "\n logFunction(\"" <<  FuncName << "\");\n";
       TheRewriter.InsertText(FuncBody->getLocStart().getLocWithOffset(1), logFunction.str(), true, true);
   }
   return true;
