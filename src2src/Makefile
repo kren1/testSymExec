@@ -114,7 +114,7 @@ emit_build_config: make_builddir
 make_builddir:
 	@test -d $(BUILDDIR) || mkdir $(BUILDDIR)
 
-$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/FunctionLogger
+$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/Symbolizer ${BUILDDIR}/FunctionLogger
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
@@ -126,6 +126,11 @@ $(BUILDDIR)/instrument: src/instrument.cpp src/FunctionLogger.hpp
 $(BUILDDIR)/FunctionLogger: src/FunctionLogger.cpp src/FunctionLogger.hpp
 	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
 		  -o $@
+
+$(BUILDDIR)/Symbolizer: src/Symbolizer.cpp src/Symbolizer.hpp
+	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
+		  -o $@
+
 
 
 .PHONY: clean
