@@ -42,7 +42,7 @@ bool SymbolizeIntegers::VisitVarDecl(VarDecl *decl) {
         const Type *type = decl->getType().getTypePtr();
         if(!decl->hasInit()) return true;
         if(!type->isIntegerType()) return true;
-        if(type->isUnsignedIntegerType()) return true;
+        if(!type->isUnsignedIntegerType()) return true;
         if(decl->getType().isConstQualified()) return true;
 
         uint64_t size = Context->getTypeInfo(decl->getType()).Width;
@@ -86,7 +86,7 @@ bool SymbolizeIntegers::VisitFunctionDecl(FunctionDecl *f) {
                                                 << size << " " 
                                                  << var_value << " " << "\n"
                                                ;
-            SSsymbolize << "\tsymbolize_and_constrain_s( &" << var_name << ", " 
+            SSsymbolize << "\tsymbolize_and_constrain_u( &" << var_name << ", " 
                                                    << size << ", " 
                                                    << var_value  << ", \"" 
                                                    << var_name << "\");\n";

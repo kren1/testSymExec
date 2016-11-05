@@ -8,46 +8,55 @@ To be linked with the file produced when usint Intrumentation.so -funcalls or -s
 
 void klee_silent_exit(int i)
 {
-    exit(i);
+//    exit(i);
 }
-void klee_make_symbolic(void* x, int y)
+void klee_make_symbolic(void* x, int y, char* name)
 {
     return;
 }
-void symbolize_and_constrain_s(void *var, int size, int64_t value, char* name) {
-    klee_make_symbolic(var, size);
+void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {
+    klee_make_symbolic(var, size, name);
 	int64_t var_value;
     switch(size)
     {
-        case 1 : var_value = *(int8_t*)var; break;
+        case 1: var_value = *(int8_t*)var; break;
         case 2: var_value = *(int16_t*)var; break;
         case 4: var_value = *(int32_t*)var; break;
         case 8: var_value = *(int64_t*)var; break;
     }
    
-    
-    if(var_value != value) {
-        printf("exit due when we  signed want %i %s\n", value, name);
-//        klee_silent_exit(0);
+    if( var_value < value) {
+        printf("var_value %i < %i value %s\n", var_value, value, name);
+        klee_silent_exit(0);
     }
-    printf("var val %li %s \n", var_value, name);
+  
+    if(var_value > value ) {
+        printf("var_value %i > %i value %s\n", var_value, value, name);
+        klee_silent_exit(0);
+    }
 }
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
-    klee_make_symbolic(var, size);
+    klee_make_symbolic(var, size, name);
 	uint64_t var_value;
     switch(size)
     {
-        case 1 : var_value = *(uint8_t*)var; break;
+        case 1: var_value = *(uint8_t*)var; break;
         case 2: var_value = *(uint16_t*)var; break;
         case 4: var_value = *(uint32_t*)var; break;
         case 8: var_value = *(uint64_t*)var; break;
     }
-   
-    if(var_value < value || var_value > value) {
-        printf("exit due when wei unsigned want %llu\n", value);
+
+    if( var_value < value) {
+//        printf("var_value %d < %d value %s\n", var_value, value, name);
         klee_silent_exit(0);
     }
+  
+    if(var_value > value ) {
+//        printf("var_value %d > %d value %s\n", var_value, value, name);
+        klee_silent_exit(0);
+    }
+  
 }
 void print_symbolic(const char* name, int64_t *val, char size)
 {
