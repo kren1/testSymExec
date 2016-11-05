@@ -11,4 +11,4 @@ LINK_WITH="$LIB_PATH/klee/symbolic.c $LIB_PATH/klee/funCalls.c"
 
 cat $LINK_WITH $1 > $TEMP_FILE &&\
 $CLANG -I$CSMITH_RUNTIME -o $2 $TEMP_FILE
-#rm $TEMP_FILE
+rm $TEMP_FILE

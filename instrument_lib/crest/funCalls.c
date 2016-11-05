@@ -1,0 +1,18 @@
+/*
+To be linked with the file produced when usint Intrumentation.so -funcalls or -symglob for native runs
+*/
+#include <stdio.h>
+#include <stdlib.h>
+
+extern char* __klee__instr_filename;
+int logFunction(char* name) 
+{
+     FILE* f = fopen(__klee__instr_filename, "a");
+     if (f == NULL)
+     {
+          return 1;
+     }
+    fprintf(f,"%s\n",name);
+    fclose(f);
+    return 0;
+}
