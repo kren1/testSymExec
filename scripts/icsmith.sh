@@ -3,11 +3,10 @@
 #runs csmith and instruments the output
 #USAGE: ./icsmith filename.c
 
-CSMITH_OUT=$(mktemp)
+TEMP_FILE=$(mktemp)
 DIR_NAME=$(dirname "$(realpath $0)")
-#echo $CSMITH_OUT
-mv $CSMITH_OUT ${CSMITH_OUT}.c
-CSMITH_OUT=${CSMITH_OUT}.c
-csmith > $CSMITH_OUT
-${DIR_NAME}/instrument.sh $CSMITH_OUT $1
+csmith > $1
+${DIR_NAME}/instrument.sh $1 $TEMP_FILE
+mv $TEMP_FILE $1
 #rm $CSMITH_OUT
+exit 0

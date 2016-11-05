@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#USAGE ./compileForKlee test0.c test0.bc
-set -x
+#USAGE ./nativeCompile test0.c test0.o
 
 CLANG=clang-3.4
 
