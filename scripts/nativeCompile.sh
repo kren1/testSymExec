@@ -2,13 +2,14 @@
 
 #USAGE ./nativeCompile test0.c test0.o
 
-CLANG=clang-3.4
 
 TEMP_FILE=linked_temp${1}.c
+DIR_NAME=$(dirname "$(realpath $0)")
+source $DIR_NAME/settings.sh
 
-LIB_PATH=/home/tim/projects/testSymExec/instrument_lib
-LINK_WITH="$LIB_PATH/klee/symbolic.c $LIB_PATH/klee/funCalls.c"
+LINK_WITH="$INST_LIB_PATH/klee/symbolic.c $INST_LIB_PATH/klee/funCalls.c"
 
 cat $LINK_WITH $1 > $TEMP_FILE &&\
 $CLANG -I$CSMITH_RUNTIME -o $2 $TEMP_FILE
 rm $TEMP_FILE
+
