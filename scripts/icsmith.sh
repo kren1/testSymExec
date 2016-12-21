@@ -12,8 +12,8 @@ fi
 TEMP_FILE=$(mktemp)
 ERR_FILE=$(mktemp)
 DIR_NAME=$(dirname "$(realpath $0)")
-
-csmith > $1
+SEED="-s 3601711868"
+csmith $SEED > $1
 ${DIR_NAME}/instrument.sh $1 $TEMP_FILE 2> $ERR_FILE &&\
 mv $TEMP_FILE $1 &&\
 rm $ERR_FILE &&\
