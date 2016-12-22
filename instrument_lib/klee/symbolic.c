@@ -37,6 +37,7 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
 }
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
+    if(size == 8) return;
     klee_make_symbolic(var, size, name);
 	uint64_t var_value;
     switch(size)

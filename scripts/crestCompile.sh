@@ -4,7 +4,7 @@
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/settings.sh
 
-#LINK_WITH="$INST_LIB_PATH/crest/symbolic.c $INST_LIB_PATH/crest/funCalls.c"
+LINK_WITH="$INST_LIB_PATH/crest/symbolic.c $INST_LIB_PATH/crest/funCalls.c"
 CILLY=${CREST_ROOT}/cil/bin/cilly
 COMPILE_DIR=$(mktemp -d)
 CALLING_DIR=$(pwd)
