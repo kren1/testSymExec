@@ -1,12 +1,19 @@
 #!/bin/bash
 
 #USAGE ./crestCompile test0.c test0.o
+DIR_NAME=$(dirname "$(realpath $0)")
+source $DIR_NAME/settings.sh
 
-TEMP_FILE=crest_linked_temp${1}.c
+#LINK_WITH="$INST_LIB_PATH/crest/symbolic.c $INST_LIB_PATH/crest/funCalls.c"
+CILLY=${CREST_ROOT}/cil/bin/cilly
+COMPILE_DIR=$(mktemp -d)
+CALLING_DIR=$(pwd)
 
-LIB_PATH=/home/tim/projects/testSymExec/instrument_lib
-LINK_WITH="$LIB_PATH/crest/symbolic.c $LIB_PATH/crest/funCalls.c"
-
-cat $LINK_WITH $1 > $TEMP_FILE &&\
-crestc  $TEMP_FILE $2
-rm $TEMP_FILE
+cd $COMPILE_DIR &&\
+echo $COMPILE_DIR &&\
+cat $LINK_WITH $CALLING_DIR/$1 > linked_temp.c &&\
+${CILLY} linked_temp.c -o ${2} --save-temps --doCrestInstrument \
+    -I${CREST_ROOT}/include -I$CSMITH_RUNTIME -L${CREST_ROOT}/lib -lcrest -lstdc++ 2> compile.errs &&\
+$CREST_ROOT/bin/process_cfg 2> procCFG.out &&\
+#cd - &&\
+exit 0 || exit 1

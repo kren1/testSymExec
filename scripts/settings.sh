@@ -8,3 +8,6 @@ INSTRUMENT_TOOL=$GH_PROJECT_ROOT/src2src/build/tool
 CLANG=clang-3.4
 LINK=llvm-link-3.4
 KLEE=klee
+
+#CREST
+CREST_ROOT=/home/klee/dependencies/crest
