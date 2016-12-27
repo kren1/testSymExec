@@ -19,7 +19,7 @@
 # directory of the binary download (the directory that has bin/, lib/, include/
 # and other directories inside).
 # See the build_vs_released_binary.sh script for an example.
-LLVM_SRC_PATH := ${HOME}/dependencies/llvm-3.9
+LLVM_SRC_PATH := /usr/lib/llvm-3.9#${HOME}/project/dependencies/llvm-3.9
 
 # LLVM_BUILD_PATH is the directory in which you built LLVM - where you ran
 # configure or cmake.
@@ -114,7 +114,7 @@ emit_build_config: make_builddir
 make_builddir:
 	@test -d $(BUILDDIR) || mkdir $(BUILDDIR)
 
-$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/Symbolizer ${BUILDDIR}/FunctionLogger
+$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/ToSSATransformer ${BUILDDIR}/Symbolizer ${BUILDDIR}/FunctionLogger
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
@@ -128,6 +128,10 @@ $(BUILDDIR)/FunctionLogger: src/FunctionLogger.cpp src/FunctionLogger.hpp
 		  -o $@
 
 $(BUILDDIR)/Symbolizer: src/Symbolizer.cpp src/Symbolizer.hpp
+	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
+		  -o $@
+
+$(BUILDDIR)/ToSSATransformer: src/ToSSATransformer.cpp src/ToSSATransformer.hpp
 	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
 		  -o $@
 

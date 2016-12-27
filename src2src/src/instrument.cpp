@@ -18,8 +18,10 @@
 #include "clang/Tooling/Tooling.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/CommandLine.h"
 
 #include "FunctionLogger.hpp"
+#include "ToSSATransformer.hpp"
 #include "Symbolizer.hpp"
 
 using namespace clang;
@@ -27,26 +29,38 @@ using namespace clang::driver;
 using namespace clang::tooling;
 
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
+static llvm::cl::opt<bool> toSSA ("toSSA", llvm::cl::desc("Perform to-SSA-like transform instead"),
+                                           llvm::cl::cat(ToolingSampleCategory));
 
 class MyASTConsumer : public ASTConsumer {
 public:
-  MyASTConsumer(Rewriter &R, ASTContext *C) : Visitor(R, C), functionCallsInstrument(R, C) {}
+  MyASTConsumer(Rewriter &R, ASTContext *C) : Visitor(R, C),
+                                              toSSATransformer(R,C), 
+                                              functionCallsInstrument(R, C) {}
 
   // Override the method that gets called for each parsed top-level
+
   // declaration.
   bool HandleTopLevelDecl(DeclGroupRef DR) override {
     for (DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
       // Traverse the declaration using our AST visitor.
-      Visitor.TraverseDecl(*b);
-      functionCallsInstrument.TraverseDecl(*b);
+      if(toSSA) {
+         llvm::errs() << "TO ssa\n";
+         toSSATransformer.TraverseDecl(*b);
 
-      (*b)->dump();
+      } else{
+         llvm::errs() << "other stuff\n";
+         Visitor.TraverseDecl(*b);
+         functionCallsInstrument.TraverseDecl(*b);
+      }
+           (*b)->dump();
     }
     return true;
   }
 
 private:
   SymbolizeIntegers Visitor;
+  ToSSATransformer toSSATransformer;
   FunctionLogger functionCallsInstrument;
 };
 
