@@ -5,8 +5,6 @@
 //------------------------------------------------------------------------------
 #include <sstream>
 #include <string>
-#include <vector>
-#include <tuple>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -19,6 +17,10 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/CommandLine.h"
+#include "clang/Tooling/Refactoring.h"
+#include "clang/Tooling/RefactoringCallbacks.h"
+#include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "clang/ASTMatchers/ASTMatchers.h"
 
 #include "FunctionLogger.hpp"
 #include "ToSSATransformer.hpp"
@@ -27,6 +29,7 @@
 using namespace clang;
 using namespace clang::driver;
 using namespace clang::tooling;
+using namespace clang::ast_matchers;
 
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 static llvm::cl::opt<bool> toSSA ("toSSA", llvm::cl::desc("Perform to-SSA-like transform instead"),
@@ -36,7 +39,9 @@ class MyASTConsumer : public ASTConsumer {
 public:
   MyASTConsumer(Rewriter &R, ASTContext *C) : Visitor(R, C),
                                               toSSATransformer(R,C), 
-                                              functionCallsInstrument(R, C) {}
+                                              functionCallsInstrument(R, C),
+                                              ctx(C),
+                                              rw(R) {}
 
   // Override the method that gets called for each parsed top-level
 
@@ -45,8 +50,18 @@ public:
     for (DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
       // Traverse the declaration using our AST visitor.
       if(toSSA) {
-         llvm::errs() << "TO ssa\n";
+         MatchFinder Finder;
+         IfStmtHandler ih(rw, ctx);
+
+         //Finder.addMatcher(ifStmt().bind("ifStmt"), &ih);
+         Finder.addMatcher(ifStmt(forEach(declRefExpr().bind("refExpr"))).bind("ifStmt"), &ih);
+//         Finder.matchAST(*ctx);
+//         ReplaceStmtWithText Callback("integer", "42");
+//         StatementMatcher sm = integerLiteral().bind("integer");
+//         Finder.addMatcher(sm, &Callback);
+//         llvm::errs() << "TO ssa\n";
          toSSATransformer.TraverseDecl(*b);
+        
 
       } else{
          llvm::errs() << "other stuff\n";
@@ -62,6 +77,8 @@ private:
   SymbolizeIntegers Visitor;
   ToSSATransformer toSSATransformer;
   FunctionLogger functionCallsInstrument;
+  ASTContext *ctx;
+  Rewriter &rw;
 };
 
 // For each source file provided to the tool, a new FrontendAction is created.
@@ -95,6 +112,18 @@ private:
   Rewriter TheRewriter;
 };
 
+StatementMatcher LoopMatcher =
+  forStmt(hasLoopInit(declStmt(hasSingleDecl(varDecl(
+    hasInitializer(integerLiteral(equals(0)))))))).bind("forLoop");
+
+class LoopPrinter : public MatchFinder::MatchCallback {
+public :
+  virtual void run(const MatchFinder::MatchResult &Result) {
+    if (const ForStmt *FS = Result.Nodes.getNodeAs<clang::ForStmt>("forLoop"))
+      FS->dump();
+  }
+};
+
 int main(int argc, const char **argv) {
   CommonOptionsParser op(argc, argv, ToolingSampleCategory);
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
@@ -104,5 +133,6 @@ int main(int argc, const char **argv) {
   // the helper newFrontendActionFactory to create a default factory that will
   // return a new MyFrontendAction object every time.
   // To further customize this, we could create our own factory class.
-  return Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
+
+   return Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
 }
