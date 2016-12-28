@@ -4,13 +4,18 @@
 #include "clang/AST/AST.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/ASTMatchers/ASTMatchFinder.h"
 #include <list>  
 #include <string>
+#include <map>
 
 using namespace clang;
-using namespace clang::ast_matchers;
 
+enum AstState {None, InThen, InElse};
+
+struct ReplaceEntry {
+    std::string thenReplace;
+    std::string elseReplace;
+};
 
 class ToSSATransformer : public RecursiveASTVisitor<ToSSATransformer> {
 public:
@@ -18,23 +23,15 @@ public:
     bool VisitStmt(Stmt *s);
     bool dataTraverseStmtPre(Stmt *s);
     bool dataTraverseStmtPost(Stmt *s);
+    bool shouldTraversePostOrder() const {return true;};
 private:
     Rewriter &TheRewriter;
     ASTContext *Context;
     std::list<IfStmt*> ifstack;
     std::string prefix;
+    AstState astPosition;
     int uniqueCnt;
-    
+    std::map<std::string, ReplaceEntry> varToAlias;
+    PrintingPolicy printPolicy;
 };
-
-class IfStmtHandler : public MatchFinder::MatchCallback {
-public:
-  IfStmtHandler(Rewriter &Rewrite, ASTContext *C);
-  virtual void run(const MatchFinder::MatchResult &Result);
-private:
-  Rewriter &Rewrite;
-  ASTContext *Context;
-  MatchFinder Finder;
-};
-
 #endif

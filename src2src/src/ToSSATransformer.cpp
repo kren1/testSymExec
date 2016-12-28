@@ -5,7 +5,7 @@
 using namespace clang;
 using namespace clang::ast_matchers;
 
-ToSSATransformer::ToSSATransformer(Rewriter &R, ASTContext *C) : TheRewriter(R), Context(C), uniqueCnt(0) {
+ToSSATransformer::ToSSATransformer(Rewriter &R, ASTContext *C) : TheRewriter(R), Context(C), uniqueCnt(0), printPolicy(C->getLangOpts()) {
     llvm::errs() << prefix << "\n";
     llvm::errs() << uniqueCnt << "\n";
     llvm::errs() << ifstack.size() << "\n";
@@ -14,23 +14,54 @@ bool ToSSATransformer::VisitStmt(Stmt *s) {
     if(isa<IfStmt>(s)) {
         IfStmt *ifStmt = cast<IfStmt>(s);
         llvm::errs() << "got and If\n" ;
-    /*    std::string s1;
-        llvm::raw_string_ostream newIf(s1);
-        thenBranch->dump();
-        thenBranch->printPretty(newIf, nullptr, printPolicy);
-        elseBranch->printPretty(newIf, nullptr, printPolicy);
-        newIf << "// end of the two;";
-        llvm::errs() << newIf.str(); */
+        std::ostringstream initVars;
+        std::ostringstream ternaryExprs;
+        ternaryExprs << "\n";
+        for(auto const& mapEntry : varToAlias) {
+            std::string type = "int";
+            std::string cond;
+            const std::string& orig_var = mapEntry.first;
+            const std::string& then_var = mapEntry.second.thenReplace;
+            const std::string& else_var = mapEntry.second.elseReplace;
+            
+            llvm::raw_string_ostream cond_stream(cond);
+            ifStmt->getCond()->printPretty(cond_stream, nullptr, printPolicy);
+            cond_stream.flush();
 
-//        TheRewriter.ReplaceText(SourceRange(ifStmt->getLocStart(), ifStmt->getLocEnd()), s);
-//        auto r = clang::tooling::replaceStmtWithStmt(Context->getSourceManager(), *s, *thenBranch);
-    }
-    else if(isa<DeclRefExpr>(s) && !ifstack.empty()) {
+            initVars << type << " " << then_var << ";\n";
+            if(!else_var.empty()) 
+                initVars << type << " " << else_var << ";\n";
+
+            ternaryExprs << orig_var << " = " << cond << " ? " << then_var;
+            ternaryExprs << " : " << (else_var.empty() ? orig_var : else_var) << "; \n"; 
+
+        }
+        TheRewriter.InsertTextBefore(ifStmt->getLocStart(), initVars.str());        
+        TheRewriter.InsertTextAfter(ifStmt->getLocEnd().getLocWithOffset(1), ternaryExprs.str());        
+      }
+    else if(isa<DeclRefExpr>(s) && !ifstack.empty() && astPosition != AstState::None) {
         DeclRefExpr *varRef = cast<DeclRefExpr>(s); 
-        llvm::errs() << "   -  " << ifstack.size()  << "\n";
-        llvm::errs() << "\n ==  " << prefix.size() << " === \n";
-        TheRewriter.InsertTextBefore(varRef->getLocStart(), prefix);
+        std::string varName = varRef->getDecl()->getNameAsString();
+        llvm::errs() << "==  " << astPosition << " === \n";
 
+        std::string replaceWith;
+        ReplaceEntry& val = varToAlias[varName];
+        if(astPosition == AstState::InThen) {
+            if(val.thenReplace.empty()) {
+                //insert a new one;
+                uniqueCnt++;
+                val.thenReplace = "t" + std::to_string(uniqueCnt) + varName;
+            }
+            replaceWith = val.thenReplace;
+        } else {
+            if(val.elseReplace.empty()) {
+                //insert a new one;
+                uniqueCnt++;
+                val.elseReplace =  "e" + std::to_string(uniqueCnt) + varName;
+            }
+            replaceWith = val.elseReplace;
+        } 
+        TheRewriter.ReplaceText(SourceRange(varRef->getLocStart(), varRef->getLocEnd()), replaceWith);
     }
     return true;
 }
@@ -39,17 +70,12 @@ bool ToSSATransformer::dataTraverseStmtPre(Stmt *s) {
     if(isa<IfStmt>(s)) {
         ifstack.push_back(cast<IfStmt>(s));
     } else if(!ifstack.empty()) {
-        std::ostringstream stringStream;
         if(s == ifstack.back()->getThen()) {
-            llvm::errs() << "THEN!!!";
-            stringStream << "then_" << uniqueCnt << "_";            
-            prefix = stringStream.str();
-            uniqueCnt++;
+            astPosition = AstState::InThen;
         } else if( s == ifstack.back()->getElse()) {
-            llvm::errs() << "else!!!";
-            stringStream << "else_" << uniqueCnt << "_";            
-            prefix = stringStream.str();
-            uniqueCnt++;
+            astPosition = AstState::InElse;
+        } else if( s == ifstack.back()->getCond()) {
+            astPosition = AstState::None;
         }
     }
     return true;
@@ -61,31 +87,8 @@ bool ToSSATransformer::dataTraverseStmtPost(Stmt *s) {
         if( s != ifstack.back())
             llvm::errs() << "Popped different if, investigate !!! \n";
         ifstack.pop_back();
+    } else if (!ifstack.empty() && (s == ifstack.back()->getThen() || s == ifstack.back()->getElse())) {
+        astPosition = AstState::None;
     }
     return true;
-}
-
-IfStmtHandler::IfStmtHandler(Rewriter &Rewrite, ASTContext *C) : Rewrite(Rewrite), Context(C) {}
-
-void IfStmtHandler::run(const MatchFinder::MatchResult &Result) {
-    llvm::errs() << "matched! ihihi \n";
-    // The matched 'if' statement was bound to 'ifStmt'.
-    if (const IfStmt *IfS = Result.Nodes.getNodeAs<clang::IfStmt>("ifStmt")) {
-        llvm::errs() << "matched ifi \n";
-      const Stmt *Then = IfS->getThen();
-      Rewrite.InsertText(Then->getLocStart(), "// the 'if' part\n", true, true);
-
-      if (const Stmt *Else = IfS->getElse()) {
-        Rewrite.InsertText(Else->getLocStart(), "// the 'else' part\n", true,
-                           true);
-      }
-    }
-    else if(const DeclRefExpr *varRef = Result.Nodes.getNodeAs<DeclRefExpr>("refExpr")) {
-        llvm::errs() << "matched decl\n";
-        if(const ValueDecl* vd = varRef->getDecl()) {
-            llvm::errs() << vd->getNameAsString() << "\n";
-        }
-
-    } 
-
 }

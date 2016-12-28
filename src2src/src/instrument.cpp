@@ -17,10 +17,6 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/CommandLine.h"
-#include "clang/Tooling/Refactoring.h"
-#include "clang/Tooling/RefactoringCallbacks.h"
-#include "clang/ASTMatchers/ASTMatchFinder.h"
-#include "clang/ASTMatchers/ASTMatchers.h"
 
 #include "FunctionLogger.hpp"
 #include "ToSSATransformer.hpp"
@@ -29,7 +25,6 @@
 using namespace clang;
 using namespace clang::driver;
 using namespace clang::tooling;
-using namespace clang::ast_matchers;
 
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 static llvm::cl::opt<bool> toSSA ("toSSA", llvm::cl::desc("Perform to-SSA-like transform instead"),
@@ -42,27 +37,13 @@ public:
                                               functionCallsInstrument(R, C),
                                               ctx(C),
                                               rw(R) {}
-
   // Override the method that gets called for each parsed top-level
-
   // declaration.
   bool HandleTopLevelDecl(DeclGroupRef DR) override {
     for (DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
       // Traverse the declaration using our AST visitor.
       if(toSSA) {
-         MatchFinder Finder;
-         IfStmtHandler ih(rw, ctx);
-
-         //Finder.addMatcher(ifStmt().bind("ifStmt"), &ih);
-         Finder.addMatcher(ifStmt(forEach(declRefExpr().bind("refExpr"))).bind("ifStmt"), &ih);
-//         Finder.matchAST(*ctx);
-//         ReplaceStmtWithText Callback("integer", "42");
-//         StatementMatcher sm = integerLiteral().bind("integer");
-//         Finder.addMatcher(sm, &Callback);
-//         llvm::errs() << "TO ssa\n";
-         toSSATransformer.TraverseDecl(*b);
-        
-
+        toSSATransformer.TraverseDecl(*b);
       } else{
          llvm::errs() << "other stuff\n";
          Visitor.TraverseDecl(*b);
@@ -79,6 +60,7 @@ private:
   FunctionLogger functionCallsInstrument;
   ASTContext *ctx;
   Rewriter &rw;
+
 };
 
 // For each source file provided to the tool, a new FrontendAction is created.
@@ -91,7 +73,8 @@ public:
     std::stringstream fileLocation;
     fileLocation << "\nchar*  __klee__instr_filename = \"" << basename(fileName) << ".out\";\n";
     
-    TheRewriter.InsertText(SM.getLocForStartOfFile(SM.getMainFileID()), fileLocation.str(), true, true);
+    if(!toSSA)
+        TheRewriter.InsertText(SM.getLocForStartOfFile(SM.getMainFileID()), fileLocation.str(), true, true);
     
     
     llvm::errs() << "** EndSourceFileAction for: "
@@ -110,18 +93,6 @@ public:
 
 private:
   Rewriter TheRewriter;
-};
-
-StatementMatcher LoopMatcher =
-  forStmt(hasLoopInit(declStmt(hasSingleDecl(varDecl(
-    hasInitializer(integerLiteral(equals(0)))))))).bind("forLoop");
-
-class LoopPrinter : public MatchFinder::MatchCallback {
-public :
-  virtual void run(const MatchFinder::MatchResult &Result) {
-    if (const ForStmt *FS = Result.Nodes.getNodeAs<clang::ForStmt>("forLoop"))
-      FS->dump();
-  }
 };
 
 int main(int argc, const char **argv) {
