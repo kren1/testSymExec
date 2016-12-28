@@ -27,21 +27,26 @@ bool ToSSATransformer::VisitStmt(Stmt *s) {
             llvm::raw_string_ostream cond_stream(cond);
             ifStmt->getCond()->printPretty(cond_stream, nullptr, printPolicy);
             cond_stream.flush();
+            uniqueCnt++;
+            std::string cond_var = "cond_" + std::to_string(uniqueCnt);
 
+           
+            initVars << "char " << cond_var << " = " << cond << ";\n";            
             initVars << type << " " << then_var << " = " << orig_var << ";\n";
             if(!else_var.empty()) 
                 initVars << type << " " << else_var << " = " << orig_var << ";\n";
 
-            ternaryExprs << orig_var << " = " << cond << " ? " << then_var;
+            ternaryExprs << orig_var << " = " << cond_var << " ? " << then_var;
             ternaryExprs << " : " << (else_var.empty() ? orig_var : else_var) << "; \n"; 
 
         }
         //Remove "else" keyword
         TheRewriter.RemoveText(ifStmt->getElseLoc(), 4);
         //Remove the if with the condition
-        TheRewriter.RemoveText(SourceRange(ifStmt-> getLocStart(), ifStmt->getCond()->getLocEnd().getLocWithOffset(1)));
+        TheRewriter.RemoveText(SourceRange(ifStmt-> getLocStart(), ifStmt->getCond()->getLocEnd().getLocWithOffset(2)));
         TheRewriter.InsertTextBefore(ifStmt->getLocStart(), initVars.str());        
         TheRewriter.InsertTextAfter(ifStmt->getLocEnd().getLocWithOffset(1), ternaryExprs.str());        
+        varToAlias.clear(); 
       }
     else if(isa<DeclRefExpr>(s) && !ifstack.empty() && astPosition != AstState::None) {
         DeclRefExpr *varRef = cast<DeclRefExpr>(s); 
