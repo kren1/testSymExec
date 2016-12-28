@@ -26,12 +26,11 @@ public:
     bool shouldTraversePostOrder() const {return true;};
 private:
     Rewriter &TheRewriter;
-    ASTContext *Context;
     std::list<IfStmt*> ifstack;
     std::string prefix;
     AstState astPosition;
     int uniqueCnt;
-    std::map<std::string, ReplaceEntry> varToAlias;
     PrintingPolicy printPolicy;
+    std::map<std::string, ReplaceEntry> varToAlias;
 };
 #endif

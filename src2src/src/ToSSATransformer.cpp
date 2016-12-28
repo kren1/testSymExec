@@ -5,7 +5,7 @@
 using namespace clang;
 using namespace clang::ast_matchers;
 
-ToSSATransformer::ToSSATransformer(Rewriter &R, ASTContext *C) : TheRewriter(R), Context(C), uniqueCnt(0), printPolicy(C->getLangOpts()) {
+ToSSATransformer::ToSSATransformer(Rewriter &R, ASTContext *C) : TheRewriter(R), uniqueCnt(0), printPolicy(C->getLangOpts()) {
     llvm::errs() << prefix << "\n";
     llvm::errs() << uniqueCnt << "\n";
     llvm::errs() << ifstack.size() << "\n";
@@ -28,14 +28,18 @@ bool ToSSATransformer::VisitStmt(Stmt *s) {
             ifStmt->getCond()->printPretty(cond_stream, nullptr, printPolicy);
             cond_stream.flush();
 
-            initVars << type << " " << then_var << ";\n";
+            initVars << type << " " << then_var << " = " << orig_var << ";\n";
             if(!else_var.empty()) 
-                initVars << type << " " << else_var << ";\n";
+                initVars << type << " " << else_var << " = " << orig_var << ";\n";
 
             ternaryExprs << orig_var << " = " << cond << " ? " << then_var;
             ternaryExprs << " : " << (else_var.empty() ? orig_var : else_var) << "; \n"; 
 
         }
+        //Remove "else" keyword
+        TheRewriter.RemoveText(ifStmt->getElseLoc(), 4);
+        //Remove the if with the condition
+        TheRewriter.RemoveText(SourceRange(ifStmt-> getLocStart(), ifStmt->getCond()->getLocEnd().getLocWithOffset(1)));
         TheRewriter.InsertTextBefore(ifStmt->getLocStart(), initVars.str());        
         TheRewriter.InsertTextAfter(ifStmt->getLocEnd().getLocWithOffset(1), ternaryExprs.str());        
       }
@@ -76,6 +80,7 @@ bool ToSSATransformer::dataTraverseStmtPre(Stmt *s) {
             astPosition = AstState::InElse;
         } else if( s == ifstack.back()->getCond()) {
             astPosition = AstState::None;
+
         }
     }
     return true;

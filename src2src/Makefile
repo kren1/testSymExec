@@ -44,11 +44,13 @@ $(info -----------------------------------------------)
 # not support (for example '-Wcovered-switch-default'). If you run into this
 # problem, build with CXX set to a modern clang++ binary instead of g++.
 CXX := ${LLVM_BIN_PATH}/clang++
-CXXFLAGS := -fno-rtti -O0 -g -fsanitize=address -fno-omit-frame-pointer
+CXXFLAGS := -fno-rtti -O0 -g #-fsanitize=address -fno-omit-frame-pointer
 PLUGIN_CXXFLAGS := -fpic
 
 LLVM_CXXFLAGS := `$(LLVM_BIN_PATH)/llvm-config --cxxflags`
 LLVM_LDFLAGS := `$(LLVM_BIN_PATH)/llvm-config --ldflags --libs --system-libs`
+#FIXME: use  a proper versioned lit
+LIT := /usr/lib/llvm-3.4/build/utils/lit/lit.py
 
 # Plugins shouldn't link LLVM and Clang libs statically, because they are
 # already linked into the main executable (opt or clang). LLVM doesn't like its
@@ -98,12 +100,21 @@ CLANG_LIBS := \
 # build artifacts.
 SRC_DIR := src
 BUILDDIR := build
+TESTDIR := tests
 
 #i	$(BUILDDIR)/jit_orc_run \
 .PHONY: all
 all: make_builddir \
 	emit_build_config \
 	$(BUILDDIR)/tool \
+
+.PHONY: test
+test: 
+	$(LIT) -v $(TESTDIR)
+
+.PHONY: link_builtins
+link_builtins: $(LLVM_SRC_PATH)/lib 
+	@ln -s $(LLVM_SRC_PATH)/lib lib
 
 
 .PHONY: emit_build_config
