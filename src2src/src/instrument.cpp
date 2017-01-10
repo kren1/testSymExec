@@ -20,6 +20,7 @@
 
 #include "FunctionLogger.hpp"
 #include "ToSSATransformer.hpp"
+#include "DeadConditionTransformer.hpp"
 #include "Symbolizer.hpp"
 
 using namespace clang;
@@ -29,6 +30,9 @@ using namespace clang::tooling;
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 static llvm::cl::opt<bool> toSSA ("toSSA", llvm::cl::desc("Perform to-SSA-like transform instead"),
                                            llvm::cl::cat(ToolingSampleCategory));
+static llvm::cl::opt<bool> deadCond ("deadCond", llvm::cl::desc("Perform dead condition injection instead"),
+                                           llvm::cl::cat(ToolingSampleCategory));
+
 
 class MyASTConsumer : public ASTConsumer {
 public:
@@ -42,6 +46,9 @@ public:
       // Traverse the declaration using our AST visitor.
       if(toSSA) {
         toSSATransformer.TraverseDecl(*b);
+      } else if (deadCond) {
+
+        injectDeadConditions( ctx, rw);
       } else{
          llvm::errs() << "other stuff\n";
          Visitor.TraverseDecl(*b);
@@ -71,7 +78,7 @@ public:
     std::stringstream fileLocation;
     fileLocation << "\nchar*  __klee__instr_filename = \"" << basename(fileName) << ".out\";\n";
     
-    if(!toSSA)
+    if(!toSSA && !deadCond)
         TheRewriter.InsertText(SM.getLocForStartOfFile(SM.getMainFileID()), fileLocation.str(), true, true);
     
     
