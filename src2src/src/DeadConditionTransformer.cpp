@@ -11,8 +11,8 @@ public:
   virtual void run(const MatchFinder::MatchResult &Result) {
     // The matched 'if' statement was bound to 'ifStmt'.
     if (const IfStmt *IfS = Result.Nodes.getNodeAs<IfStmt>("ifStmt")) {
-      Rewrite.InsertText(IfS->getCond()->getLocEnd().getLocWithOffset(1),
-                         " && true",
+      Rewrite.InsertText(IfS->getCond()->getLocStart(),
+                         "true && ",
                          true,
                          true);
     }
