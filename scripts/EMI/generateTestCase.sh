@@ -18,3 +18,4 @@ done
 
 $INSTRUMENT_TOOL -extra-arg="-I$CSMITH_RUNTIME"  $1 --  > $TMP_FILE 
 mv $TMP_FILE $1
+chmod a-x $1
