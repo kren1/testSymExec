@@ -10,6 +10,8 @@ RUN_STATS=$(cat $1.info | tr '\n' ' ')
 echo $RUN_STATS
 if [ -z "$EXPERIMENT_LOG" ];
 then 
-    echo $RUN_STATS >> "$EXPERIMENT_LOG";
+    :
+else
+    echo "$RUN_STATS" >> "$EXPERIMENT_LOG";
 fi
 rm $1.info
