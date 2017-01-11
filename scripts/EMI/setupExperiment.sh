@@ -9,5 +9,5 @@ cd $1
 $DIR_NAME/getEnvConfig.sh experimentConfigdump.txt
 
 #seq 10 | xargs -L1 -I{} csmith -o test{}.c
-seq 100 | xargs -L1 -I{}  $DIR_NAME/generateTestCase.sh test{}.c 2> /dev/null
+seq 1000 | xargs -L1 -I{}  $DIR_NAME/generateTestCase.sh test{}.c 2> /dev/null
 

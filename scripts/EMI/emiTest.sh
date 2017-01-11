@@ -10,6 +10,8 @@ INST_FILE=$(mktemp)
 EMI_RUN=$(mktemp)
 #echo $NULL $ORIG_RUN $INST_FILE $EMI_RUN
 $COMPILE_AND_RUN $1 $1.out 2> $NULL > $ORIG_RUN &&\
+#shortcircuit if the previous run timeouts
+grep timeout $1.info && exit 0
 $INSTRUMENTER $1 $INST_FILE 2> $NULL &&\
 $COMPILE_AND_RUN $INST_FILE $1.out 2> $NULL > $EMI_RUN &&\
 diff $EMI_RUN $ORIG_RUN &&\
