@@ -1,5 +1,5 @@
 #!/bin/bash
-#example USAGE ./singleEMIExperiment test1.x
+#example USAGE ./singleEMIExperiment test1.c
 DIR_NAME=$(dirname "$(realpath $0)")
 CSMITH_OUT=$1
 NULL=/dev/null
