@@ -1,5 +1,5 @@
 #!/bin/bash
-#USAGE ./kleeCompileAndRun test1.c
+#USAGE ./kleeCompileAndRun test1.c test1.c.out
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
 
