@@ -3,7 +3,6 @@
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
 INSTRUMENT_TOOL=$GH_PROJECT_ROOT/src2src/build/tool
-CSMITH_OUT=csmith$1
 TMP_FILE=$(mktemp)
 
 while
