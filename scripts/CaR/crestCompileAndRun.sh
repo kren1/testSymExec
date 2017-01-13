@@ -8,10 +8,11 @@ CILLY=${CREST_ROOT}/cil/bin/cilly
 COMPILE_DIR=$(mktemp -d)
 CALLING_DIR=$(pwd)
 CREST_EXEC=$CREST_ROOT/bin/run_crest
+INPUT_FILE_FULL_PATH=$(readlink -m $1)
 
 cd $COMPILE_DIR &&\
 echo $COMPILE_DIR &&\
-cat $LINK_WITH $CALLING_DIR/$1 > linked_temp.c &&\
+cat $LINK_WITH $INPUT_FILE_FULL_PATH > linked_temp.c &&\
 ${CILLY} linked_temp.c -o executable.o --save-temps --doCrestInstrument \
     -I${CREST_ROOT}/include -I$CSMITH_RUNTIME -L${CREST_ROOT}/lib -lcrest -lstdc++ 2> compile.errs &&\
 $CREST_ROOT/bin/process_cfg 2> procCFG.out &&\
