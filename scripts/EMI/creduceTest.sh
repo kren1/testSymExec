@@ -6,7 +6,7 @@ NULL=/dev/null
 NATIVE_O_FILE=$(mktemp)
 NATIVE_OUT=$(mktemp)
 ERRS=$(mktemp)
-NAME='prep_test410.c'
+NAME='prep_test322.c'
 #Check that the given file doesn't have any weird behaviour by compiling it with sctrict policy and running it natively
 $CLANG -fsanitize=address -fsanitize=undefined -Werror=extra -w \
         -Werror=all -Wno-error=unused-value -Wno-error=unused-variable -Wno-error=parentheses-equality \
@@ -16,4 +16,6 @@ $CLANG -fsanitize=address -fsanitize=undefined -Werror=extra -w \
 timeout 5 $NATIVE_O_FILE > $NATIVE_OUT &&\
 grep checksum $NATIVE_OUT > /dev/null &&\
 ! $DIR_NAME/emiTest.sh $NAME 2> $ERRS > $NULL &&\
-grep 'Segmentation fault' $ERRS
+grep 'CexCachingSolver.cpp:274' $ERRS &&\
+grep 'Assertion' $ERRS &&\
+grep 'computeValidity()' $ERRS 
