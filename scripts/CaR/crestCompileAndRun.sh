@@ -13,8 +13,8 @@ cd $COMPILE_DIR &&\
 echo $COMPILE_DIR &&\
 cat $LINK_WITH $CALLING_DIR/$1 > linked_temp.c &&\
 ${CILLY} linked_temp.c -o executable.o --save-temps --doCrestInstrument \
-    -I${CREST_ROOT}/include -I$CSMITH_RUNTIME -L${CREST_ROOT}/lib -lcrest -lstdc++ #2> compile.errs &&\
-$CREST_ROOT/bin/process_cfg #2> procCFG.out &&\
+    -I${CREST_ROOT}/include -I$CSMITH_RUNTIME -L${CREST_ROOT}/lib -lcrest -lstdc++ 2> compile.errs &&\
+$CREST_ROOT/bin/process_cfg 2> procCFG.out &&\
 timeout 100 $CREST_EXEC  ./executable.o 1000 -dfs
 EXIT_STATUS=$?
 

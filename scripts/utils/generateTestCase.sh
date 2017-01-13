@@ -9,7 +9,7 @@ while
     csmith -o $1
     gcc -I$CSMITH_RUNTIME -o $TMP_FILE $1
     timeout  2 $TMP_FILE
-    [ $? -eq 124 ]; 
+    [ $? -ne 0 ]; 
 do
     continue
 done

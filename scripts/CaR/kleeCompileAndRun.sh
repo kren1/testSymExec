@@ -17,15 +17,12 @@ rm $2
 rm $BC_FILE $LINKED_BC_FILE
 if [ $EXIT_STATUS == "124" ];
 then
-    echo "status 42342"
     echo "timeout" >> $1.info
     exit 0;
 fi
 
 if [ $EXIT_STATUS == "0" ];
 then
-
-    echo "status 0"
     exit 0;
 fi
 exit 1
