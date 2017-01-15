@@ -25,7 +25,7 @@ fi
 
 if [ $EXIT_STATUS == "0" ];
 then
-    echo "native: ${DURATION}s" >> $2.info
+    echo "${DURATION}" >> $2.info
     exit 0;
 fi
 
