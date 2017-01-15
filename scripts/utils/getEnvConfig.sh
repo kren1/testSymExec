@@ -4,7 +4,7 @@ source $DIR_NAME/../settings.sh
 
 #Making the system status dump
 echo "========== Git ==============" >> $1
-git status  >> $1
+git diff  >> $1
 echo ""  >> $1
 git log -n 1 >> $1
 echo ""  >> $1

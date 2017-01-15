@@ -5,8 +5,8 @@ source $DIR_NAME/../settings.sh
 
 O_FILE=$(mktemp)
 LINKED_FILE=$(mktemp)
-$CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE $1 > /dev/null &&\
-$CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/native/build/*.o > /dev/null &&\
+$CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE $1 2> /dev/null &&\
+$CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/native/build/*.o 2> /dev/null &&\
 START=$(date +%s.%N) &&\
 timeout 1 $LINKED_FILE
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
@@ -25,7 +25,7 @@ fi
 
 if [ $EXIT_STATUS == "0" ];
 then
-    echo "${DURATION}" >> $2.info
+    echo "n:${DURATION}" >> $2.info
     exit 0;
 fi
 

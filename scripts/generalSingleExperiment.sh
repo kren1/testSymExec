@@ -26,7 +26,7 @@ $COMPILE_AND_RUN_1 $1 $ORIG_LOC > $ORIG_RUN &&\
 #grep timeout $INFO_FILE && exit 0
 $INSTRUMENTER $1 $INST_FILE 2> $NULL &&\
 $COMPILE_AND_RUN_2 $INST_FILE $ORIG_LOC > $EMI_RUN &&\
-diff $EMI_RUN $ORIG_RUN &&\
+diff $EMI_RUN $ORIG_RUN >&2 &&\
 echo "SUCCESS"  >> $INFO_FILE || echo "Fail" >> $INFO_FILE
 #cat $ORIG_RUN $INFO_FILE $EMI_RUN
 
