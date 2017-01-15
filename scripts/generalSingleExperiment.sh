@@ -15,17 +15,20 @@ NULL=/dev/null
 ORIG_RUN=$(mktemp)
 INST_FILE=$(mktemp)
 EMI_RUN=$(mktemp)
+#Stores location of the original file, so .out and .info files can be obtained
+ORIG_LOC=$(realpath $1)
 #echo $NULL $ORIG_RUN $INST_FILE $EMI_RUN
+#Here we use > to make sure info file is created fresh
+echo $1 > $INFO_FILE
 
-echo $1 >> $INFO_FILE
-
-$COMPILE_AND_RUN_1 $1 $1.out > $ORIG_RUN &&\
+$COMPILE_AND_RUN_1 $1 $ORIG_LOC > $ORIG_RUN &&\
 #shortcircuit if the previous run timeouts
 #grep timeout $INFO_FILE && exit 0
 $INSTRUMENTER $1 $INST_FILE 2> $NULL &&\
-$COMPILE_AND_RUN_2 $INST_FILE $1.out > $EMI_RUN &&\
+$COMPILE_AND_RUN_2 $INST_FILE $ORIG_LOC > $EMI_RUN &&\
 diff $EMI_RUN $ORIG_RUN &&\
 echo "SUCCESS"  >> $INFO_FILE || echo "Fail" >> $INFO_FILE
+#cat $ORIG_RUN $INFO_FILE $EMI_RUN
 
 RUN_STATS=$(cat $INFO_FILE | tr '\n' ' ')
 echo $RUN_STATS
@@ -35,4 +38,4 @@ then
 else
     echo "$RUN_STATS" >> "$EXPERIMENT_LOG";
 fi
-rm $INFO_FILE
+rm $ORIG_RUN $INFO_FILE $EMI_RUN $INST_FILE

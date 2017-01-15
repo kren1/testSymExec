@@ -32,7 +32,8 @@ void klee_silent_exit(int code) {
 //    }
 //}
 
-void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
+void symbolize_and_constrain_u(void *var, int size, uint32_t value, char* name) {
+    if(value >  1294967295) return;
 	uint32_t var_value;
     switch(size)
     {
@@ -41,7 +42,7 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         case 4: __CrestUInt((uint32_t*)var); var_value = *(uint32_t*)var; break;
         case 8: return;
     }
-    printf("%s %d\n", name, var_value);
+//    printf("%s %d\n", name, var_value);
 
     if( var_value < value) {
 //        printf("var_value %d < %d value %s\n", var_value, value, name);
