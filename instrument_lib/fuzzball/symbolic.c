@@ -20,7 +20,7 @@ static int sym_pos = 0;
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {}
 
 void symbolize_and_constrain_u(uint8_t *var, int size, uint32_t value, char* name) {
-    printf("%s, %d\n", name, size);
+ //   printf("%s, %d\n", name, size);
     if(size != 4 && name == NULL) return;
     if(sym_pos + size > SYM_SIZE) return;
 
@@ -39,7 +39,7 @@ void symbolize_and_constrain_u(uint8_t *var, int size, uint32_t value, char* nam
          case 8: return;//*(uint64_t*)var = symbolic64() ; var_value = *(uint64_t*)var; break;
     }
 */
-    printf("%s: %d vs %d\n",name, *var, value);
+//    printf("%s: %d vs %d\n",name, *var, value);
     if( v < value) {
         exit(0);
     }
