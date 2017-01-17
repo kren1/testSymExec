@@ -1,0 +1,41 @@
+#!/bin/bash
+#USAGE ./fuzzballCompileAndRun /path/to/source.c funCallsOutName.c
+DIR_NAME=$(dirname "$(realpath $0)")
+source $DIR_NAME/../settings.sh
+NULL=/dev/null
+NULL=/dev/tty
+
+O_FILE=$(mktemp)
+LINKED_FILE=linked.o #$(mktemp)
+$CLANG -xc -c -g -I$INST_LIB_PATH -m32 -I$CSMITH_RUNTIME -o $O_FILE $1 2> $NULL &&\
+$CLANG -o $LINKED_FILE -m32 $O_FILE $INST_LIB_PATH/fuzzball/build/*.o 2> $NULL &&\
+ADDRESSES=$(objdump -d linked.o | grep -P "call [\s\w\d]+ <symbolic\d+" \
+ | awk '{print  "-skip-call-ret-symbol 0x" substr($1, 1, length($1)-1) "=n"}' | tail -n1 |  head -n1) &&\
+ADDRESSES=$(objdump -D linked.o | grep -P "magic_symbols" \
+ | awk '{print  "-symbolic-string 0x"i $1 "+4"}' | tail -n1 |  head -n1) &&\
+echo $ADDRESSES &&\
+$FUZZBALL -linux-syscalls -trace-stopping -trace-conditions $ADDRESSES $LINKED_FILE -- $LINKED_FILE
+
+#START=$(date +%s.%N) &&\
+#timeout 1 $LINKED_FILE
+#DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
+#EXIT_STATUS=$?
+##Prints the function call trace to stdout and deletes it for cleanup. 
+#cat $(basename $2).out &&\
+#rm $(basename $2).out
+#
+#
+#rm $O_FILE $LINKED_FILE
+#if [ $EXIT_STATUS == "124" ];
+#then
+#    echo "timeout"
+#    exit 0;
+#fi
+#
+#if [ $EXIT_STATUS == "0" ];
+#then
+#    echo "n:${DURATION}" >> $2.info
+#    exit 0;
+#fi
+#
+#exit 1

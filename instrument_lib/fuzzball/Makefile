@@ -1,0 +1,17 @@
+CLANG=clang-3.4
+BUILD=build
+
+all: symbolic.o funCalls.o
+
+    
+funCalls.o: funCalls.c
+	mkdir -p ${BUILD}
+	${CLANG} -c -m32 -o ${BUILD}/$@ $^
+ 
+symbolic.o: symbolic.c
+	mkdir -p ${BUILD}
+	${CLANG} -c  -m32 -g -o ${BUILD}/$@ $^
+
+.PHONY : clean
+clean: 
+	rm  ${BUILD}/*.o
