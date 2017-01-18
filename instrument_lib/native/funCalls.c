@@ -7,6 +7,7 @@ To be linked with the file produced when usint Intrumentation.so -funcalls or -s
 extern char* __klee__instr_filename;
 int logFunction(char* name) 
 {
+     if(strlen(name) == 0) return 0;
      FILE* f = fopen(__klee__instr_filename, "a");
      if (f == NULL)
      {
