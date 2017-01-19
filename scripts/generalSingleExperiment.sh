@@ -21,7 +21,9 @@ ORIG_LOC=$(realpath $1)
 #Here we use > to make sure info file is created fresh
 echo $1 > $INFO_FILE
 
+#set -x
 $COMPILE_AND_RUN_1 $1 $ORIG_LOC > $ORIG_RUN &&\
+#cat $ORIG_RUN &&\
 #shortcircuit if the previous run timeouts
 #grep timeout $INFO_FILE && exit 0
 $INSTRUMENTER $1 $INST_FILE 2> $NULL &&\

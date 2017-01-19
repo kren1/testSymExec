@@ -13,11 +13,11 @@ $CLANG -o $LINKED_FILE -m32 $O_FILE $INST_LIB_PATH/fuzzball/build/*.o 2> $NULL &
 ADDRESSES=$(objdump -d $LINKED_FILE | grep -P "call [\s\w\d]+ <symbolic\d+" \
  | awk '{print  "-skip-call-ret-symbol 0x" substr($1, 1, length($1)-1) "=n"}' | tail -n1 |  head -n1) &&\
 ADDRESSES=$(objdump -D $LINKED_FILE | grep -P "magic_symbols" \
- | awk '{print  "-symbolic-string 0x"i $1 "+4"}' | tail -n1 |  head -n1) &&\
+ | awk '{print  "-symbolic-string 0x"i $1 "+16"}' | tail -n1 |  head -n1) &&\
 #echo $ADDRESSES &&\
-#$FUZZBALL -linux-syscalls -trace-stopping -trace-conditions $ADDRESSES $LINKED_FILE -- $LINKED_FILE
 START=$(date +%s.%N) &&\
-timeout 100 $FUZZBALL -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE
+timeout 100 $FUZZBALL -linux-syscalls -trace-stopping -trace-conditions $ADDRESSES $LINKED_FILE -- $LINKED_FILE
+#timeout 100 $FUZZBALL -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE
 EXIT_STATUS=$?
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
 

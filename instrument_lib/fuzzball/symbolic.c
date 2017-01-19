@@ -14,45 +14,41 @@
 // uint64_t symbolic64(){ return 64; };
 
 
-static char magic_symbols[SYM_SIZE] = {0,0,0,3};
+static uint32_t magic_symbols[SYM_SIZE] = {0,0,0,3};
 static int sym_pos = 0;
 
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {}
 
-void symbolize_and_constrain_u(uint8_t *var, int size, uint32_t value, char* name) {
- //   printf("%s, %d\n", name, size);
+void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* name) {
+    printf("%s, %d\n", name, size);
+    if(size == 1) {
+        printf("fsdf 1\n");
+        return;
+    }
     if(size != 4 && name == NULL) return;
     if(sym_pos + size > SYM_SIZE) return;
+    printf("%s, %d\n", name, size);
 
-    uint32_t v = *(uint32_t*)(magic_symbols + sym_pos);
-    sym_pos += size;
+    uint32_t v = *(magic_symbols + sym_pos);
+    sym_pos += size / 4;
     
-    
-//    *var = sym_var;
-    
-/*
-    switch(size)
-    {
-         case 1: *(uint8_t*)var = symbolic8() ; var_value = *(uint8_t*)var; break;
-         case 2: *(uint16_t*)var = symbolic16() ; var_value = *(uint16_t*)var; break;
-         case 4: *(uint32_t*)var = symbolic32() ; var_value = *(uint32_t*)var; break;
-         case 8: return;//*(uint64_t*)var = symbolic64() ; var_value = *(uint64_t*)var; break;
-    }
-*/
-//    printf("%s: %d vs %d\n",name, *var, value);
+    *var = v;
+
     if( v < value) {
+        printf("branch 1 \n");
         exit(0);
     }
   
     if(v > value ) {
+        printf("branch 2 \n");
         exit(0);
     }
-    *var = v;
 
 }
 
 void print_symbolic(const char* name, int64_t *val, char size)
 {
+    if(size != 32) return;
     switch(size)
     {
         case 8: printf("%s: %d\n",name,*(int8_t*)val); break;
