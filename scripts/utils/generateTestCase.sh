@@ -6,7 +6,7 @@ INSTRUMENT_TOOL=$GH_PROJECT_ROOT/src2src/build/tool
 TMP_FILE=$(mktemp)
 
 while
-    csmith -o $1 --no-divs --no-muls --no-math64 --no-return-structs --no-return-unions
+    csmith -o $1 --no-math64 --no-return-structs --no-return-unions
     gcc -I$CSMITH_RUNTIME -o $TMP_FILE $1
     timeout  2 $TMP_FILE
     [ $? -ne 0 ]; 
