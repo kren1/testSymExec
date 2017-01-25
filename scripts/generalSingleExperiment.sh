@@ -32,7 +32,7 @@ diff $EMI_RUN $ORIG_RUN >&2 &&\
 echo "SUCCESS"  >> $INFO_FILE || echo "Fail" >> $INFO_FILE
 #cat $ORIG_RUN $INFO_FILE $EMI_RUN
 
-#vimdiff $EMI_RUN $ORIG_RUN 
+vimdiff $EMI_RUN $ORIG_RUN 
 RUN_STATS=$(cat $INFO_FILE | tr '\n' ' ')
 echo $RUN_STATS
 if [ -z "$EXPERIMENT_LOG" ];

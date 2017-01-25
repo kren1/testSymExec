@@ -13,7 +13,8 @@ int logFunction(char* name)
 
 
 //     printf("env: %s \n",getenv("ITER_NUM")); 
-     FILE* f = fopen(filename, "a");
+     FILE* f = fopen(__klee__instr_filename, "a");
+     //FILE* f = fopen(filename, "a");
      if (f == NULL)
      {
           return 1;

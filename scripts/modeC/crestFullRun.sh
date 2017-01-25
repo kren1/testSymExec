@@ -13,7 +13,7 @@ INPUT_FILE_FULL_PATH=$(readlink -m $1)
 mkdir $COMPILE_DIR &&\
 cp $1 $COMPILE_DIR &&\
 cd $COMPILE_DIR &&\
-echo $COMPILE_DIR &&\
+#echo $COMPILE_DIR &&\
 cat $LINK_WITH $INPUT_FILE_FULL_PATH > linked_temp.c &&\
 #cp $INPUT_FILE_FULL_PATH linked_temp.c
 ${CILLY} linked_temp.c -o executable.o --save-temps --doCrestInstrument \

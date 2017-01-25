@@ -15,9 +15,9 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
 //    printf("env: %s;", getenv("VARS_FILENAME"));
-    printf("%s: %u \t",name, value);
+//    printf("%s: %u \t",name, value);
     if(varFile == NULL) {
-        printf("Opening File %s\n", getenv("VARS_FILENAME"));
+  //      printf("Opening File %s\n", getenv("VARS_FILENAME"));
         if(! (varFile = fopen(getenv("VARS_FILENAME"), "r"))) {
             printf("Cannot open vars file %s\n exiting .. \n", getenv("VARS_FILENAME"));
             exit(0);
@@ -31,13 +31,13 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
     }
 
     if(value >  1294967295 || emptyVarFile) {
-        printf(" skip\n");
+//        printf(" skip\n");
         return;
     }
 
     uint32_t readVal;
     fscanf(varFile, "%u", &readVal);
-    printf("%s: %u \n", name,readVal);
+ //   printf("%s: %u \n", name,readVal);
 
     switch(size)
     {

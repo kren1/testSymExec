@@ -3,7 +3,7 @@
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
 
-rm $(basename $2).out
+#rm $(basename $2).out
 O_FILE=$(mktemp)
 LINKED_FILE=$(mktemp)
 $CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE $1 2> /dev/null &&\
@@ -13,8 +13,8 @@ timeout 1 $LINKED_FILE
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
 EXIT_STATUS=$?
 #Prints the function call trace to stdout and deletes it for cleanup. 
-cat $(basename $2).out &&\
-rm $(basename $2).out
+#cat $(basename $2).out &&\
+rm $(basename $2 2> /dev/null).out 2> /dev/null
 
 
 rm $O_FILE $LINKED_FILE
