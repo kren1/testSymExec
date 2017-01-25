@@ -26,17 +26,23 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         fseek(varFile, 0, SEEK_END);
         if(ftell(varFile) == 0) {
             emptyVarFile = true;
+            srand(13242);
         }
         rewind(varFile);
     }
-
-    if(value >  1294967295 || emptyVarFile) {
+    if(value >  1294967295 ) {
 //        printf(" skip\n");
         return;
     }
 
     uint32_t readVal;
-    fscanf(varFile, "%u", &readVal);
+    if(emptyVarFile) {
+        readVal = rand(); 
+
+    } else {
+        fscanf(varFile, "%u", &readVal);
+    }
+
  //   printf("%s: %u \n", name,readVal);
 
     switch(size)

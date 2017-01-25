@@ -27,13 +27,13 @@ with open(crestOutput, 'r') as f:
     for line in f.readlines() :
         if "checksum" in line:
             iter_cnt += 1
-            var_assignments_name = "input." + str(iter_cnt)
+            var_assignments_name = "input."  + str(iter_cnt)
             os.environ["VARS_FILENAME"] = var_assignments_name
             call([modeCNativeRunScript, src_filename])
-       # print(line[:-1])
+#        print(line[:-1])
             
 
 os.chdir("..")
-call(["rm","-r", dirname])
+#call(["rm","-r", dirname])
             
     
