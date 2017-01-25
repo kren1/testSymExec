@@ -5,11 +5,13 @@ source $DIR_NAME/../settings.sh
 
 LINK_WITH="$INST_LIB_PATH/modeCcrest/symbolic.c $INST_LIB_PATH/modeCcrest/funCalls.c"
 CILLY=${CREST_ROOT}/cil/bin/cilly
-COMPILE_DIR=$(mktemp -d)
+COMPILE_DIR=$1.d
 CALLING_DIR=$(pwd)
 CREST_EXEC=$CREST_ROOT/bin/run_crest
 INPUT_FILE_FULL_PATH=$(readlink -m $1)
 
+mkdir $COMPILE_DIR &&\
+cp $1 $COMPILE_DIR &&\
 cd $COMPILE_DIR &&\
 echo $COMPILE_DIR &&\
 cat $LINK_WITH $INPUT_FILE_FULL_PATH > linked_temp.c &&\
@@ -27,9 +29,10 @@ EXIT_STATUS=$?
 #echo "Prediction failed!" >> $2.info
 #) || cat output.out
 #
+cat output.out
 ##Prints the function call trace to stdout and deletes it for cleanup. 
 #cat $(basename $2).out &&\
-rm $(basename $2).out
+rm $(basename $2).out 2> /dev/null
 
 #rm -r $COMPILE_DIR
 if [ $EXIT_STATUS == "124" ];
