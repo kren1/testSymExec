@@ -16,11 +16,11 @@ with open(crestOutput, 'r') as f:
         if "checksum" in line:
             iter_cnt += 1
             var_assignments_name = "input"
-            if iter_cnt > 1:
-                var_assignments_name += "." + str(iter_cnt)
+#            if iter_cnt > 1:
+            var_assignments_name += "." + str(iter_cnt)
             os.environ["VARS_FILENAME"] = var_assignments_name
             call([modeCNativeRunScript, "test1.c"])
-        print(line)
+        print(line[:-1])
             
             
     

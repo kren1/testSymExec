@@ -17,7 +17,7 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
 //    printf("env: %s;", getenv("VARS_FILENAME"));
     printf("%s: %u \t",name, value);
     if(varFile == NULL) {
-        printf("Opening File");
+        printf("Opening File %s\n", getenv("VARS_FILENAME"));
         if(! (varFile = fopen(getenv("VARS_FILENAME"), "r"))) {
             printf("Cannot open vars file %s\n exiting .. \n", getenv("VARS_FILENAME"));
             exit(0);
@@ -26,7 +26,6 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         fseek(varFile, 0, SEEK_END);
         if(ftell(varFile) == 0) {
             emptyVarFile = true;
-            return;
         }
         rewind(varFile);
     }
