@@ -36,7 +36,7 @@ fi
 
 if [ $EXIT_STATUS == "0" ];
 then
-    echo "n:${DURATION}" >> $2.info
+    echo "f:${DURATION}" >> $2.info
     exit 0;
 fi
 
