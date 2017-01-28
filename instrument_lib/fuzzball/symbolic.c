@@ -22,7 +22,7 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
 void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* name) {
 //    printf("%s, %d\n", name, size);
     if(size == 1 || size == 2 || size == 8) {
- //       printf("fsdf 1\n");
+//        printf("fsdf 1\n");
         return;
     }
     if(size != 4 && name == NULL) return;
@@ -47,11 +47,12 @@ void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* na
 void print_symbolic(const char* name, int64_t *val, char size)
 {
 //    if(size != 32) return;
+//    printf("printing ... ");
     switch(size)
     {
-        case 8: printf("%s: %d\n",name,*(int8_t*)val); break;
-        case 16: printf("%s: %d\n",name,*(int16_t*)val); break;
+        case 8: printf("%s: %hhd\n",name,*(int8_t*)val); break;
+        case 16: printf("%s: %hd\n",name,*(int16_t*)val); break;
         case 32: printf("%s: %d\n",name,*(int32_t*)val); break;
-        case 64: printf("%s: %ld\n",name,*val); break;
+        case 64: printf("%s: %lld\n",name,*val); break;
     }
 }
