@@ -16,7 +16,8 @@ ADDRESSES=$(objdump -D $LINKED_FILE | grep -P "magic_symbols" \
  | awk '{print  "-symbolic-string 0x"i $1 "+16"}' | tail -n1 |  head -n1) &&\
 #echo $ADDRESSES &&\
 START=$(date +%s.%N) &&\
-timeout 100 $FUZZBALL -linux-syscalls -trace-stopping -trace-conditions $ADDRESSES $LINKED_FILE -- $LINKED_FILE
+timeout 100 $FUZZBALL  -solver-path /home/tim/dependencies/fuzzball/stp/stp/build/stp -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE
+#timeout 100 $FUZZBALL  -solver-path /home/tim/dependencies/fuzzball/stp/stp/build/stp -linux-syscalls -trace-stopping -trace-conditions $ADDRESSES $LINKED_FILE -- $LINKED_FILE
 #timeout 100 $FUZZBALL -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE
 EXIT_STATUS=$?
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
@@ -29,7 +30,7 @@ rm $(basename $2).out
 rm $O_FILE $LINKED_FILE
 if [ $EXIT_STATUS == "124" ];
 then
-    echo "timeout"
+    echo "timeout" >> $2.info
     exit 0;
 fi
 

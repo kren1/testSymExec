@@ -20,14 +20,14 @@ static int sym_pos = 0;
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {}
 
 void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* name) {
-    printf("%s, %d\n", name, size);
-    if(size == 1) {
-        printf("fsdf 1\n");
+//    printf("%s, %d\n", name, size);
+    if(size == 1 || size == 2 || size == 8) {
+ //       printf("fsdf 1\n");
         return;
     }
     if(size != 4 && name == NULL) return;
     if(sym_pos + size > SYM_SIZE) return;
-    printf("%s, %d\n", name, size);
+//    printf("%s, %d\n", name, size);
 
     uint32_t v = *(magic_symbols + sym_pos);
     sym_pos += size / 4;
@@ -35,12 +35,10 @@ void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* na
     *var = v;
 
     if( v < value) {
-        printf("branch 1 \n");
         exit(0);
     }
   
     if(v > value ) {
-        printf("branch 2 \n");
         exit(0);
     }
 
@@ -48,7 +46,7 @@ void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* na
 
 void print_symbolic(const char* name, int64_t *val, char size)
 {
-    if(size != 32) return;
+//    if(size != 32) return;
     switch(size)
     {
         case 8: printf("%s: %d\n",name,*(int8_t*)val); break;
