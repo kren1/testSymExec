@@ -14,25 +14,27 @@
 // uint64_t symbolic64(){ return 64; };
 
 
-static uint32_t magic_symbols[SYM_SIZE] = {0,0,0,3};
+static uint64_t magic_symbols[SYM_SIZE] = {0,0,0,3};
+static uint8_t *symarray = (uint8_t*)magic_symbols;
 static int sym_pos = 0;
 
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {}
 
 void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* name) {
 //    printf("%s, %d\n", name, size);
-    if(size == 1 || size == 2 || size == 8) {
-//        printf("fsdf 1\n");
-        return;
-    }
-    if(size != 4 && name == NULL) return;
-    if(sym_pos + size > SYM_SIZE) return;
-//    printf("%s, %d\n", name, size);
+    if(size == 8) return;
+    if(sym_pos + size > SYM_SIZE * 8) return;
+//    printf("%s, %d,  sym pos - %d\n", name, size, sym_pos);
 
-    uint32_t v = *(magic_symbols + sym_pos);
-    sym_pos += size / 4;
-    
-    *var = v;
+    uint32_t v;
+    switch(size) 
+    {
+        case 1: v = *(uint8_t*)(symarray + sym_pos); *(uint8_t*)var = v; break;
+        case 2: v = *(uint16_t*)(symarray + sym_pos); *(uint16_t*)var = v; break;
+        case 4: v = *(uint32_t*)(symarray + sym_pos); *(uint32_t*)var = v; break;
+    }
+
+    sym_pos =  sym_pos + size;
 
     if( v < value) {
         exit(0);

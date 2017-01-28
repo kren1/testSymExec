@@ -8,12 +8,12 @@ NULL=/dev/null
 O_FILE=$(mktemp)
 #LINKED_FILE=linked.o #$(mktemp)
 LINKED_FILE=$(mktemp)
-$CLANG -xc -c -g -I$INST_LIB_PATH -m32 -I$CSMITH_RUNTIME -o $O_FILE $1 2> $NULL &&\
+echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -g -I$INST_LIB_PATH -m32 -I$CSMITH_RUNTIME -o $O_FILE - 2> $NULL &&\
 $CLANG -o $LINKED_FILE -m32 $O_FILE $INST_LIB_PATH/fuzzball/build/*.o 2> $NULL &&\
 ADDRESSES=$(objdump -d $LINKED_FILE | grep -P "call [\s\w\d]+ <symbolic\d+" \
  | awk '{print  "-skip-call-ret-symbol 0x" substr($1, 1, length($1)-1) "=n"}' | tail -n1 |  head -n1) &&\
 ADDRESSES=$(objdump -D $LINKED_FILE | grep -P "magic_symbols" \
- | awk '{print  "-symbolic-region 0x"i $1 "+16"}' | tail -n1 |  head -n1) &&\
+ | awk '{print  "-symbolic-region 0x"i $1 "+32"}' | tail -n1 |  head -n1) &&\
 #echo $ADDRESSES &&\
 START=$(date +%s.%N) &&\
 timeout 100 $FUZZBALL  -solver-path /home/tim/dependencies/fuzzball/stp/stp/build/stp -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE
