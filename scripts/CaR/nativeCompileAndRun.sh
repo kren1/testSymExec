@@ -6,7 +6,7 @@ source $DIR_NAME/../settings.sh
 rm $(basename $2).out
 O_FILE=$(mktemp)
 LINKED_FILE=$(mktemp)
-$CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE $1 2> /dev/null &&\
+echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE - 2> /dev/null &&\
 $CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/native/build/*.o 2> /dev/null &&\
 START=$(date +%s.%N) &&\
 timeout 1 $LINKED_FILE
