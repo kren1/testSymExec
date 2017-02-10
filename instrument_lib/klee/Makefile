@@ -1,6 +1,3 @@
-CLANG=clang-3.4
-BUILD=build
-
 all: symbolic.bc funCalls.bc
 
     
