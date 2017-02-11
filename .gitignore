@@ -2,5 +2,6 @@
 build
 Output
 playground
+settings.sh
 *.swp
 *.bc
