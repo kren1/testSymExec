@@ -6,7 +6,7 @@ source $DIR_NAME/../settings.sh
 BC_FILE=$(mktemp)
 LINKED_BC_FILE=$(mktemp)
 $CLANG -xc -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $BC_FILE -c -emit-llvm $1 > /dev/null &&\
-$LINK -o=$LINKED_BC_FILE $BC_FILE $INST_LIB_PATH/klee/$CONSTRAINER/build/*.bc &&\
+$LINK -o=$LINKED_BC_FILE $BC_FILE $INST_LIB_PATH/$LIB_CHOICE/*.bc &&\
 START=$(date +%s.%N) &&\
 timeout 100 klee $LINKED_BC_FILE
 EXIT_STATUS=$?

@@ -1,14 +1,27 @@
-all: symbolic.o funCalls.o
+all: symbolic.o funCalls.o symbolic.bc funCalls.bc
 
     
 funCalls.o: funCalls.c
 	mkdir -p ${BUILD}
+	mkdir -p ${BUILD}/fuzzballModeA
 	${CLANG} -c -o ${BUILD}/$@ $^
+	${CLANG} -c -m32 -o ${BUILD}/fuzzballModeA/$@ $^
+
+funCalls.bc: funCalls.c
+	mkdir -p ${BUILD}/kleeModeA
+	${CLANG} -c -emit-llvm -o ${BUILD}/kleeModeA/$@ $^
  
 symbolic.o: symbolic.c
 	mkdir -p ${BUILD}
+	mkdir -p ${BUILD}/fuzzballModeA
 	${CLANG} -c -o ${BUILD}/$@ $^
+	${CLANG} -c -m32 -o ${BUILD}/fuzzballModeA/$@ $^
+
+
+symbolic.bc: symbolic.c
+	mkdir -p ${BUILD}/kleeModeA
+	${CLANG} -c -emit-llvm -o ${BUILD}/kleeModeA/$@ $^
 
 .PHONY : clean
 clean: 
-	rm  ${BUILD}/*.o
+	rm  -r ${BUILD}

@@ -9,7 +9,7 @@ O_FILE=$(mktemp)
 #LINKED_FILE=linked.o #$(mktemp)
 LINKED_FILE=$(mktemp)
 echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -g -I$INST_LIB_PATH -m32 -I$CSMITH_RUNTIME -o $O_FILE - 2> $NULL &&\
-$CLANG -o $LINKED_FILE -m32 $O_FILE $INST_LIB_PATH/fuzzball/build/*.o 2> $NULL &&\
+$CLANG -o $LINKED_FILE -m32 $O_FILE $INST_LIB_PATH/$LIB_CHOICE/*.o 2> $NULL &&\
 ADDRESSES=$(objdump -d $LINKED_FILE | grep -P "call [\s\w\d]+ <symbolic\d+" \
  | awk '{print  "-skip-call-ret-symbol 0x" substr($1, 1, length($1)-1) "=n"}' | tail -n1 |  head -n1) &&\
 ADDRESSES=$(objdump -D $LINKED_FILE | grep -P "magic_symbols" \
