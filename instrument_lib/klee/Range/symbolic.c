@@ -25,25 +25,34 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
         case 8: var_value = *(int64_t*)var; break;
     }
 
-    if( !( var_value <= value && var_value >= value)) {
+    int64_t v = value;
+    if( var_value <= v - 2 
+        || var_value == v - 1 
+        || var_value == v + 1 
+        || var_value == v + 2
+        || var_value >= v + 3 ) {
         klee_silent_exit(0);
     }
-   
 }
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
     if(size == 8) return;
     klee_make_symbolic(var, size, name);
-	uint64_t var_value;
+	int64_t var_value;
     switch(size)
     {
         case 1: var_value = *(uint8_t*)var; break;
         case 2: var_value = *(uint16_t*)var; break;
         case 4: var_value = *(uint32_t*)var; break;
-        case 8: var_value = *(uint64_t*)var; break;
     }
+    
+    int64_t v = value;
 
-    if( !( var_value <= value && var_value >= value)) {
+    if( var_value <= v - 2 
+        || var_value == v - 1 
+        || var_value == v + 1 
+        || var_value == v + 2
+        || var_value >= v + 3 ) {
         klee_silent_exit(0);
     }
   
