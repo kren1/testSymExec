@@ -1,14 +1,8 @@
-all: symbolic.bc funCalls.bc
+all:
+	$(MAKE) -C LT
+	$(MAKE) -C LTE
 
-    
-funCalls.bc: funCalls.c
-	mkdir -p ${BUILD}
-	${CLANG} -c -emit-llvm -o ${BUILD}/$@ $^
- 
-symbolic.bc: symbolic.c
-	mkdir -p ${BUILD}
-	${CLANG} -c -emit-llvm -o ${BUILD}/$@ $^
-
-.PHONY : clean
-clean: 
-	rm  ${BUILD}/*.bc
+.PHONY: clean 
+clean:
+	$(MAKE) -C LT clean
+	$(MAKE) -C LTE clean

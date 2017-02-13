@@ -3,13 +3,14 @@
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
 
-set -x
 BC_FILE=$(mktemp)
 LINKED_BC_FILE=$(mktemp)
 $CLANG -xc -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $BC_FILE -c -emit-llvm $1 > /dev/null &&\
-$LINK -o=$LINKED_BC_FILE $BC_FILE $INST_LIB_PATH/klee/build/*.bc &&\
+$LINK -o=$LINKED_BC_FILE $BC_FILE $INST_LIB_PATH/klee/$CONSTRAINER/build/*.bc &&\
+START=$(date +%s.%N) &&\
 timeout 100 klee $LINKED_BC_FILE
 EXIT_STATUS=$?
+DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
 
 #Prints the function call trace to stdout and deletes it for cleanup. 
 cat $(basename $2).out &&\
@@ -24,6 +25,7 @@ fi
 
 if [ $EXIT_STATUS == "0" ];
 then
+    echo "k:${DURATION}" >> $2.info
     exit 0;
 fi
 exit 1
