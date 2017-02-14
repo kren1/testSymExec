@@ -46,15 +46,15 @@ void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* na
 
 }
 
-void print_symbolic(const char* name, int64_t *val, char size)
+void print_symbolic(const char* name, uint64_t *val, char size)
 {
 //    if(size != 32) return;
 //    printf("printing ... ");
     switch(size)
     {
-        case 8: printf("%s: %hhd\n",name,*(int8_t*)val); break;
-        case 16: printf("%s: %hd\n",name,*(int16_t*)val); break;
-        case 32: printf("%s: %d\n",name,*(int32_t*)val); break;
-        case 64: printf("%s: %lld\n",name,*val); break;
+        case 8: printf("%s: %hhu\n",name,*(uint8_t*)val); break;
+        case 16: printf("%s: %hu\n",name,*(uint16_t*)val); break;
+        case 32: printf("%s: %u\n",name,*(uint32_t*)val); break;
+        case 64: printf("%s: %llu\n",name,*val); break;
     }
 }

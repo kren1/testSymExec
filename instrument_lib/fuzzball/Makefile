@@ -7,7 +7,7 @@ funCalls.o: funCalls.c
  
 symbolic.o: symbolic.c
 	mkdir -p ${BUILD}
-	${CLANG} -c  -m32 -g -o ${BUILD}/$@ $^
+	${CLANG} -c  -m32 -o ${BUILD}/$@ $^
 
 .PHONY : clean
 clean: 
