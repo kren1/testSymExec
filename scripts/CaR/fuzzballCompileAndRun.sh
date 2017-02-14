@@ -16,7 +16,7 @@ ADDRESSES=$(objdump -D $LINKED_FILE | grep -P "magic_symbols" \
  | awk '{print  "-symbolic-region 0x" $1 "+32"}' | tail -n1 |  head -n1) &&\
 #echo $ADDRESSES &&\
 START=$(date +%s.%N) &&\
-timeout 100 $FUZZBALL  -solver-path $STP -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE
+timeout 100 $FUZZBALL  -solver-path $STP -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE 2> $NULL
 #timeout 100 $FUZZBALL  -solver-path /home/tim/dependencies/fuzzball/stp/stp/build/stp -linux-syscalls -trace-stopping -trace-conditions $ADDRESSES $LINKED_FILE -- $LINKED_FILE
 #timeout 100 $FUZZBALL -linux-syscalls $ADDRESSES $LINKED_FILE -- $LINKED_FILE
 EXIT_STATUS=$?

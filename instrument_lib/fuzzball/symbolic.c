@@ -50,11 +50,14 @@ void print_symbolic(const char* name, uint64_t *val, char size)
 {
 //    if(size != 32) return;
 //    printf("printing ... ");
+    int64_t v; 
     switch(size)
     {
-        case 8: printf("%s: %hhu\n",name,*(uint8_t*)val); break;
-        case 16: printf("%s: %hu\n",name,*(uint16_t*)val); break;
-        case 32: printf("%s: %u\n",name,*(uint32_t*)val); break;
-        case 64: printf("%s: %llu\n",name,*val); break;
+        case 8: v = *(int8_t*)val; break;
+        case 16: v = *(int16_t*)val; break;
+        case 32: v = *(int32_t*)val; break;
+        case 64: v = *(int64_t*)val; break;
     }
+    printf("%s: %lld\n",name,v);
+
 }
