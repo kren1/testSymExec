@@ -34,9 +34,9 @@ are the environment variables set by the setup script.
 
 Mode A experiments can be ran with these setups:
 
-* `. setups/kleeModeA.sh` setups up the experiment for KLEE in Mode A
-* `. setups/crestModeA.sh` setups up the experiment for Crest in Mode A
-* `. setups/fuzzballModeA.sh` setups up the experiment for FuzzBALL in Mode A
+* `. setups/kleeModeA.sh` sets up the experiment for KLEE in Mode A
+* `. setups/crestModeA.sh` sets up the experiment for Crest in Mode A
+* `. setups/fuzzballModeA.sh` sets up the experiment for FuzzBALL in Mode A
 
 
 ##Mode B experiments
