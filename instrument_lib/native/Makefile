@@ -1,4 +1,5 @@
 all: symbolic.o funCalls.o symbolic.bc funCalls.bc
+	$(MAKE) -C modeC
 
     
 funCalls.o: funCalls.c
@@ -25,3 +26,4 @@ symbolic.bc: symbolic.c
 .PHONY : clean
 clean: 
 	rm  -r ${BUILD}
+	$(MAKE) -C modeC clean

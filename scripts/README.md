@@ -50,6 +50,13 @@ use crash, output, function call and performance oracles.
 * `. setups/crestConstrainersModeB.sh` sets up the experiment for Crest in Mode B with less than constrainer 
 * `. setups/fuzzballConstrainersModeB.sh` sets up the experiment for FuzzBALL in Mode B with less than constrainer 
 
+### Mode B - coverage
+
+An example of a coverage oracle being used for crest can be found by `. setups/crestCoverageModeB.sh`
+
+##Mode C experiments
+
+An example of Mode C implementation for Crest can be set up by `. setups/modeCCrestSetup.sh`
 
 #Experiment setup
 
