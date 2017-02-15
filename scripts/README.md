@@ -1,3 +1,17 @@
+#Overview
+
+The important files to look out for:
+
+* `./generalSingleExperiment.sh test1.c`: Reads the `COMPILE_AND_RUN_{1,2}` environment variables, runs test1.c with them and compares the output.
+* `./runGeneralExperiment.sh`: Runs `generalSingleExperiment.sh` for every `test.c` file in the current directory
+* `setups/*`: Contains configuration files for a particular experiment setup. A file from `setups/` should be sourced before running the above two scripts.
+* `CaR/*`: Contains compile and run scripts different symbolic executors in different modes
+* `./SetupExperiment.sh dirname`: generates a new set of `test.c` in the `dirname` directory, to be used for experimentation with the first two scripts.
+* `./creduceTest.c` a skeleton creduce oracle. This should be edited to capture the bug we want to reduce. Then creduce can be ran using this script as the oracle.
+* `Settings.in` should be edited upon when installing
+
+
+
 #Running an experiment
 
 The general steps to running an experiment:
