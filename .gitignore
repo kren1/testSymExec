@@ -1,6 +1,7 @@
 *.o
 build
 Output
+Divisor/primes.c
 playground
 settings.sh
 *.swp

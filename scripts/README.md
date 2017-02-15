@@ -47,6 +47,7 @@ use crash, output, function call and performance oracles.
 * `. setups/kleeLTConstrainerModeB.sh` sets up the experiment for KLLE in Mode B with less than constrainer 
 * `. setups/kleeLTEConstrainerModeB.sh` sets up the experiment for KLLE in Mode B with less than or equal constrainer 
 * `. setups/kleeRangeConstrainerModeB.sh` sets up the experiment for KLLE in Mode B with less than or equal constrainer 
+* `. setups/kleeDivisorConstrainerModeB.sh` sets up the experiment for KLLE in Mode B with the divisor constrainer
 * `. setups/crestConstrainersModeB.sh` sets up the experiment for Crest in Mode B with less than constrainer 
 * `. setups/fuzzballConstrainersModeB.sh` sets up the experiment for FuzzBALL in Mode B with less than constrainer 
 
