@@ -3,7 +3,7 @@
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
 
-rm $(basename $2).out
+rm $(basename $2).out 2> /dev/null
 O_FILE=$(mktemp)
 LINKED_FILE=$(mktemp)
 echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE - 2> /dev/null &&\
