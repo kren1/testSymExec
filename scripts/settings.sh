@@ -14,3 +14,6 @@ CREST_ROOT=/home/tim/dependencies/crest
 
 #FuzzBALL
 FUZZBALL=/home/tim/dependencies/fuzzball/exec_utils/fuzzball
+
+
+TIGRESS=/home/tim/dependencies/tigress/tigress
