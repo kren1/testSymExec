@@ -2,12 +2,14 @@
 #USAGE ./nativeCompileAndRun /path/to/source.c funCallsOutName.c
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
+NULL=/dev/null
+NULL=/dev/tty
 
-rm $(basename $2).out 2> /dev/null
+rm $(basename $2).out 2> $NULL
 O_FILE=$(mktemp)
 LINKED_FILE=$(mktemp)
-echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE - 2> /dev/null &&\
-$CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/native/build/*.o 2> /dev/null &&\
+echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE - 2> $NULL &&\
+$CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/native/build/*.o 2> $NULL &&\
 START=$(date +%s.%N) &&\
 timeout 1 $LINKED_FILE
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\

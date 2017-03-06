@@ -1,4 +1,4 @@
-all: symbolic.o funCalls.o symbolic.bc funCalls.bc
+all: symbolic.o funCalls.o symbolic.bc funCalls.bc libsymbolic.a
 	$(MAKE) -C modeC
 
     
@@ -22,6 +22,9 @@ symbolic.o: symbolic.c
 symbolic.bc: symbolic.c
 	mkdir -p ${BUILD}/kleeModeA
 	${CLANG} -c -emit-llvm -o ${BUILD}/kleeModeA/$@ $^
+
+libsymbolic.a: funCalls.o symbolic.o
+	ar rcs ${BUILD}/libsymbolic.a ${BUILD}/funCalls.o ${BUILD}/symbolic.o
 
 .PHONY : clean
 clean: 
