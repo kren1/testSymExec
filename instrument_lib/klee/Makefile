@@ -1,17 +1,12 @@
-CLANG=clang-3.4
-BUILD=build
+all:
+	$(MAKE) -C LT
+	$(MAKE) -C LTE
+	$(MAKE) -C Range
+	$(MAKE) -C Divisor
 
-all: symbolic.bc funCalls.bc
-
-    
-funCalls.bc: funCalls.c
-	mkdir -p ${BUILD}
-	${CLANG} -c -emit-llvm -o ${BUILD}/$@ $^
- 
-symbolic.bc: symbolic.c
-	mkdir -p ${BUILD}
-	${CLANG} -c -emit-llvm -o ${BUILD}/$@ $^
-
-.PHONY : clean
-clean: 
-	rm  ${BUILD}/*.bc
+.PHONY: clean 
+clean:
+	$(MAKE) -C LT clean
+	$(MAKE) -C LTE clean
+	$(MAKE) -C Range clean
+	$(MAKE) -C Divisor clean

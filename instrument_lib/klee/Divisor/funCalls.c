@@ -3,6 +3,7 @@ To be linked with the file produced when usint Intrumentation.so -funcalls or -s
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern char* __klee__instr_filename;
 int logFunction(char* name) 

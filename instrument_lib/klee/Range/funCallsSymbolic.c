@@ -3,18 +3,24 @@ To be linked with the file produced when usint Intrumentation.so -funcalls or -s
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 extern char* __klee__instr_filename;
+static fnBuff[50];
+char* get_file_name() 
+{
+   sprintf(fnBuff,"%s%d",__klee__instr_filename,klee_get_state_num());
+    return fnBuff;
+}
 int logFunction(char* name) 
 {
-     if(strlen(name) == 0) return 0;
-     FILE* f = fopen(__klee__instr_filename, "a");
+     FILE* f = fopen(get_file_name(), "a");
      if (f == NULL)
      {
           return 1;
      }
     fprintf(f,"%s\n",name);
     fclose(f);
+//    printf("state %d\n",klee_get_state_num());
     return 0;
 }
+

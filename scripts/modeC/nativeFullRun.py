@@ -18,7 +18,7 @@ with open(transfer_file_name, 'r') as f:
 crestOutput = "output.out"
 #funcallsFileTemplate = "iter_%d_%s"
 
-modeCNativeRunScript="/home/tim/projects/testSymExec/scripts/CaR/modeCNativeCompileAndRun.sh"
+modeCNativeRunScript="/home/symext/testSymExec/scripts/CaR/modeCNativeCompileAndRun.sh"
 
 iter_cnt = 0
 os.chdir(dirname)

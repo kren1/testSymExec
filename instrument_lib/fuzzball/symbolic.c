@@ -14,46 +14,50 @@
 // uint64_t symbolic64(){ return 64; };
 
 
-static uint32_t magic_symbols[SYM_SIZE] = {0,0,0,3};
+static uint64_t magic_symbols[SYM_SIZE] = {0,0,0,3};
+static uint8_t *symarray = (uint8_t*)magic_symbols;
 static int sym_pos = 0;
 
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {}
 
 void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* name) {
-    printf("%s, %d\n", name, size);
-    if(size == 1) {
-        printf("fsdf 1\n");
-        return;
-    }
-    if(size != 4 && name == NULL) return;
-    if(sym_pos + size > SYM_SIZE) return;
-    printf("%s, %d\n", name, size);
+//    printf("%s, %d\n", name, size);
+    if(size == 8) return;
+    if(sym_pos + size > SYM_SIZE * 8) return;
+//    printf("%s, %d,  sym pos - %d\n", name, size, sym_pos);
 
-    uint32_t v = *(magic_symbols + sym_pos);
-    sym_pos += size / 4;
-    
-    *var = v;
+    uint32_t v;
+    switch(size) 
+    {
+        case 1: v = *(uint8_t*)(symarray + sym_pos); *(uint8_t*)var = v; break;
+        case 2: v = *(uint16_t*)(symarray + sym_pos); *(uint16_t*)var = v; break;
+        case 4: v = *(uint32_t*)(symarray + sym_pos); *(uint32_t*)var = v; break;
+    }
+
+    sym_pos =  sym_pos + size;
 
     if( v < value) {
-        printf("branch 1 \n");
         exit(0);
     }
   
     if(v > value ) {
-        printf("branch 2 \n");
         exit(0);
     }
 
 }
 
-void print_symbolic(const char* name, int64_t *val, char size)
+void print_symbolic(const char* name, uint64_t *val, char size)
 {
-    if(size != 32) return;
+//    if(size != 32) return;
+//    printf("printing ... ");
+    int64_t v; 
     switch(size)
     {
-        case 8: printf("%s: %d\n",name,*(int8_t*)val); break;
-        case 16: printf("%s: %d\n",name,*(int16_t*)val); break;
-        case 32: printf("%s: %d\n",name,*(int32_t*)val); break;
-        case 64: printf("%s: %ld\n",name,*val); break;
+        case 8: v = *(int8_t*)val; break;
+        case 16: v = *(int16_t*)val; break;
+        case 32: v = *(int32_t*)val; break;
+        case 64: v = *(int64_t*)val; break;
     }
+    printf("%s: %lld\n",name,v);
+
 }

@@ -2,6 +2,7 @@
 To be linked with the file produced when usint Intrumentation.so -funcalls or -symglob for native runs
 */
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 extern char* __klee__instr_filename;

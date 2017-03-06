@@ -1,6 +1,8 @@
 *.o
 build
 Output
+primes.c
 playground
+settings.sh
 *.swp
 *.bc
