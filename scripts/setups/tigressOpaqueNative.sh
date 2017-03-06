@@ -4,10 +4,10 @@ if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 source $DIR/../settings.sh
 
 
-LIB_CHOICE=klee/LT/build
-INSTRUMENTER=${GH_PROJECT_ROOT}/scripts/EMI/tigressFlatten.sh
-COMPILE_AND_RUN_1=${GH_PROJECT_ROOT}/scripts/CaR/kleeCompileAndRun.sh
-COMPILE_AND_RUN_2=${GH_PROJECT_ROOT}/scripts/CaR/kleeCompileAndRun.sh
+LIB_CHOICE=
+INSTRUMENTER=${GH_PROJECT_ROOT}/scripts/EMI/tigressOpaque.sh
+COMPILE_AND_RUN_1=${GH_PROJECT_ROOT}/scripts/CaR/nativeCompileAndRun.sh
+COMPILE_AND_RUN_2=${GH_PROJECT_ROOT}/scripts/CaR/nativeCompileAndRun.sh
 export INSTRUMENTER
 export COMPILE_AND_RUN_1
 export COMPILE_AND_RUN_2

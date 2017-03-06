@@ -5,7 +5,7 @@ source $DIR/../settings.sh
 
 
 LIB_CHOICE=
-INSTRUMENTER=${GH_PROJECT_ROOT}/scripts/EMI/tigressOpaque.sh
+INSTRUMENTER=${GH_PROJECT_ROOT}/scripts/EMI/tigressFlatten.sh
 COMPILE_AND_RUN_1=${GH_PROJECT_ROOT}/scripts/CaR/nativeCompileAndRun.sh
 COMPILE_AND_RUN_2=${GH_PROJECT_ROOT}/scripts/CaR/nativeCompileAndRun.sh
 export INSTRUMENTER
