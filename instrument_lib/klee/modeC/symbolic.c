@@ -18,7 +18,7 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
 }
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
-    if(symbolizeCallCnt > 10) return;
+    if(symbolizeCallCnt > 2) return;
     symbolizeCallCnt++;
     klee_make_symbolic(var, size, name);
  

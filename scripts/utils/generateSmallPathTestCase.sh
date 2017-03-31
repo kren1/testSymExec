@@ -6,7 +6,7 @@ INSTRUMENT_TOOL=$GH_PROJECT_ROOT/src2src/build/tool
 source $DIR_NAME/../setups/kleeTerminatingModeC.sh
 #TMP_FILE=$(mktemp --suffix='.c')
 TMP_FILE=$1
-set -x
+#set -x
 
 REGEX='(?<=KLEE: done: completed paths = )([0-9]+)'
 
