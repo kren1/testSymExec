@@ -4,17 +4,18 @@
 
 using namespace clang::ast_matchers;
 
-class ConditionInjector : public MatchFinder::MatchCallback {
+class BranchSwapper : public MatchFinder::MatchCallback {
 public:
-  ConditionInjector(Rewriter &Rewrite) : Rewrite(Rewrite) {}
+  BranchSwapper(Rewriter &Rewrite) : Rewrite(Rewrite) {}
 
   virtual void run(const MatchFinder::MatchResult &Result) {
     // The matched 'if' statement was bound to 'ifStmt'.
     if (const IfStmt *IfS = Result.Nodes.getNodeAs<IfStmt>("ifStmt")) {
-      Rewrite.InsertText(IfS->getCond()->getLocStart(),
-                         "true && ",
-                         true,
-                         true);
+      Rewrite.ReplaceText(IfS->getThen()->getSourceRange(), IfS->getElse()->getSourceRange());
+      Rewrite.ReplaceText(IfS->getElse()->getSourceRange(), IfS->getThen()->getSourceRange());
+
+      Rewrite.InsertText(IfS->getCond()->getLocStart(), "!(");
+      Rewrite.InsertText(IfS->getCond()->getLocEnd().getLocWithOffset(1), ")");
     }
   }
 
@@ -24,9 +25,9 @@ private:
 
 
 void swapBranches(ASTContext *C, Rewriter &R) {
-    ConditionInjector injector(R);
+    BranchSwapper swapper(R);
     MatchFinder Matcher;
 
-    Matcher.addMatcher(ifStmt().bind("ifStmt"), &injector);
+    Matcher.addMatcher(ifStmt().bind("ifStmt"), &swapper);
     Matcher.matchAST(*C);
 }
