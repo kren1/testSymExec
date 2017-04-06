@@ -11,17 +11,16 @@ int main() {
        if( i < 0) {
           printf("if branch #1 i:%d",i);
         } else {
+
           printf("else branc #1 i:%d",i);
+
           if( i > 2) {
             printf("if branch #2 i:%d",i);
           } else {
             printf("else branc #2 i:%d",i);
           }
+
         }
-
-
-        
- 
    } 
    return 0;
 }

@@ -16,6 +16,7 @@ public:
 
       Rewrite.InsertText(IfS->getCond()->getLocStart(), "!(");
       Rewrite.InsertText(IfS->getCond()->getLocEnd().getLocWithOffset(1), ")");
+      
     }
   }
 
@@ -28,6 +29,6 @@ void swapBranches(ASTContext *C, Rewriter &R) {
     BranchSwapper swapper(R);
     MatchFinder Matcher;
 
-    Matcher.addMatcher(ifStmt().bind("ifStmt"), &swapper);
+    Matcher.addMatcher(ifStmt(unless(hasDescendant(ifStmt()))).bind("ifStmt"), &swapper);
     Matcher.matchAST(*C);
 }
