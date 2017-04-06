@@ -4,15 +4,27 @@
 
 using namespace clang::ast_matchers;
 
+class FactGenerator {
+public:
+    virtual std::string getNextTrue() = 0;
+    virtual ~FactGenerator(){};
+};
+
+class OneIsOneFG : public FactGenerator {
+public:
+    virtual std::string getNextTrue() {
+        return "( 1 == 1 )";
+    }
+};
+
 class ConditionInjector : public MatchFinder::MatchCallback {
 public:
-  ConditionInjector(Rewriter &Rewrite) : Rewrite(Rewrite) {}
+  ConditionInjector(Rewriter &Rewrite, FactGenerator &fg) : Rewrite(Rewrite), factGen(fg) {}
 
   virtual void run(const MatchFinder::MatchResult &Result) {
-    // The matched 'if' statement was bound to 'ifStmt'.
     if (const IfStmt *IfS = Result.Nodes.getNodeAs<IfStmt>("ifStmt")) {
       Rewrite.InsertText(IfS->getCond()->getLocStart(),
-                         "true && ",
+                         factGen.getNextTrue() + " && ",
                          true,
                          true);
     }
@@ -20,11 +32,13 @@ public:
 
 private:
   Rewriter &Rewrite;
+  FactGenerator &factGen;
 };
 
 
 void injectDeadConditions(ASTContext *C, Rewriter &R) {
-    ConditionInjector injector(R);
+    OneIsOneFG oneIsone;
+    ConditionInjector injector(R, oneIsone);
     MatchFinder Matcher;
 
     Matcher.addMatcher(ifStmt().bind("ifStmt"), &injector);
