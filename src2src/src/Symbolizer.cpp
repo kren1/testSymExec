@@ -37,6 +37,7 @@ bool RemoveCrcCallsVisitor::VisitStmt(Stmt *s) {
 }
 
 SymbolizeIntegers::SymbolizeIntegers(Rewriter &R, ASTContext *C) : TheRewriter(R), Context(C) {}
+
 bool SymbolizeIntegers::VisitVarDecl(VarDecl *decl) {
     if(decl->hasGlobalStorage() || decl->isStaticDataMember() ) {
         const Type *type = decl->getType().getTypePtr();
