@@ -32,7 +32,7 @@ public:
         uint32_t num = bitRnd(seed);
         std::stringstream fact;
         fact << " ( ";
-        fact << name << " < " << num;
+        fact << name << " <= " << num;
         fact << " || ";
         fact << name << " > " << num; 
         fact << " ) ";
