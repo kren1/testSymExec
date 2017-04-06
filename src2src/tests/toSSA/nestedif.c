@@ -3,6 +3,7 @@
 // RUN: %t1 > %t3
 // RUN: %t2 > %t4
 // RUN: diff %t3 %t4
+// XFAIL: *
 #include <stdio.h>
 int main() {
     for(int n = -50; n < 50; n++) {

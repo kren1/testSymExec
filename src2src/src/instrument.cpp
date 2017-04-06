@@ -21,17 +21,22 @@
 #include "FunctionLogger.hpp"
 #include "ToSSATransformer.hpp"
 #include "DeadConditionTransformer.hpp"
+#include "SwapBranchesTransformer.hpp"
 #include "Symbolizer.hpp"
 
 using namespace clang;
 using namespace clang::driver;
 using namespace clang::tooling;
 
-static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
+static llvm::cl::OptionCategory ToolingSampleCategory("Semantic perserving transformations");
 static llvm::cl::opt<bool> toSSA ("toSSA", llvm::cl::desc("Perform to-SSA-like transform instead"),
                                            llvm::cl::cat(ToolingSampleCategory));
 static llvm::cl::opt<bool> deadCond ("deadCond", llvm::cl::desc("Perform dead condition injection instead"),
                                            llvm::cl::cat(ToolingSampleCategory));
+
+static llvm::cl::opt<bool> swapBranch ("swapBranches", llvm::cl::desc("Swap if and else branch order"),
+                                           llvm::cl::cat(ToolingSampleCategory));
+
 
 
 class MyASTConsumer : public ASTConsumer {
@@ -46,8 +51,9 @@ public:
       // Traverse the declaration using our AST visitor.
       if(toSSA) {
         toSSATransformer.TraverseDecl(*b);
+      } else if (swapBranch) {
+        swapBranches( ctx, rw);
       } else if (deadCond) {
-
         injectDeadConditions( ctx, rw);
       } else{
          llvm::errs() << "other stuff\n";

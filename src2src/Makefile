@@ -109,7 +109,7 @@ all: make_builddir \
 	$(BUILDDIR)/tool \
 
 .PHONY: test
-test: 
+test: ${BUILDDIR}/tool
 	$(LIT) -v $(TESTDIR)
 
 .PHONY: link_builtins
@@ -125,7 +125,7 @@ emit_build_config: make_builddir
 make_builddir:
 	@test -d $(BUILDDIR) || mkdir $(BUILDDIR)
 
-$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/ToSSATransformer ${BUILDDIR}/Symbolizer ${BUILDDIR}/FunctionLogger $(BUILDDIR)/DeadConditionTransformer
+$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/ToSSATransformer ${BUILDDIR}/Symbolizer ${BUILDDIR}/FunctionLogger $(BUILDDIR)/DeadConditionTransformer $(BUILDDIR)/SwapBranchesTransformer
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
@@ -149,6 +149,11 @@ $(BUILDDIR)/ToSSATransformer: src/ToSSATransformer.cpp src/ToSSATransformer.hpp
 $(BUILDDIR)/DeadConditionTransformer: src/DeadConditionTransformer.cpp src/DeadConditionTransformer.hpp
 	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
 		  -o $@
+
+$(BUILDDIR)/SwapBranchesTransformer: src/SwapBranchesTransformer.cpp src/SwapBranchesTransformer.hpp
+	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
+		  -o $@
+
 
 
 
