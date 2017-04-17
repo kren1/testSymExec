@@ -1,7 +1,9 @@
 CLANG := clang-3.4
 BUILD := build
+#FLAGS := -I$(shell pwd)/common -E
+FLAGS := -I$(shell pwd)/common 
 
-export CLANG BUILD
+export CLANG BUILD FLAGS
 
 all:
 	$(MAKE) -C klee

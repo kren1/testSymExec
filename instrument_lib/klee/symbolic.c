@@ -5,6 +5,18 @@ To be linked with the file produced when usint Intrumentation.so -funcalls or -s
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#ifdef LT_CONSTRAIN
+    #include "constrainers/lt.h"
+#endif
+#ifdef LTE_CONSTRAIN
+    #include "constrainers/lte.h"
+#endif
+
+#ifdef RANGE_CONSTRAIN
+    #include "constrainers/range.h"
+#endif
+
+
 
 void klee_silent_exit(int i)
 {
@@ -24,11 +36,8 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
         case 4: var_value = *(int32_t*)var; break;
         case 8: var_value = *(int64_t*)var; break;
     }
-
-    if( !( var_value <= value && var_value >= value)) {
-        klee_silent_exit(0);
-    }
    
+    CONSTRAIN(var_value, value, klee_silent_exit(0));
 }
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
@@ -43,17 +52,14 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         case 8: var_value = *(uint64_t*)var; break;
     }
 
-    if( !( var_value <= value && var_value >= value)) {
-        klee_silent_exit(0);
-    }
-  
+    CONSTRAIN(var_value, value, klee_silent_exit(0));
 }
 void print_symbolic(const char* name, int64_t *val, char size)
 {
     switch(size)
     {
-        case 8: printf("%s: %d\n",name,*(int8_t*)val); break;
-        case 16: printf("%s: %d\n",name,*(int16_t*)val); break;
+        case 8: printf("%s: %hhd\n",name,*(int8_t*)val); break;
+        case 16: printf("%s: %hd\n",name,*(int16_t*)val); break;
         case 32: printf("%s: %d\n",name,*(int32_t*)val); break;
         case 64: printf("%s: %lld\n",name,*val); break;
     }
