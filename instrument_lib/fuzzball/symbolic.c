@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include "constrainers/lt.h"
 
 #define SYM_SIZE 4
 
@@ -35,15 +36,7 @@ void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* na
     }
 
     sym_pos =  sym_pos + size;
-
-    if( v < value) {
-        exit(0);
-    }
-  
-    if(v > value ) {
-        exit(0);
-    }
-
+    CONSTRAIN(v, value, exit(0));
 }
 
 void print_symbolic(const char* name, uint64_t *val, char size)
