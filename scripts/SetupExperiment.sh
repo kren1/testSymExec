@@ -12,8 +12,6 @@ case "$2" in
        -m)
               #Multiple paths option
               TOOL="$DIR_NAME/utils/generateSmallPathTestCase.sh" 
-              LIB_CHOICE=klee/LT/build
-              export LIB_CHOICE
               ;;
         *)
               TOOL="$DIR_NAME/utils/generateTestCase.sh" 

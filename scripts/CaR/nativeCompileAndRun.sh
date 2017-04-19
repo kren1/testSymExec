@@ -3,7 +3,7 @@
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
 NULL=/dev/null
-NULL=/dev/tty
+#NULL=/dev/tty
 
 rm $(basename $2).out 2> $NULL
 O_FILE=$(mktemp)
