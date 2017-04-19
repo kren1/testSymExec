@@ -12,6 +12,8 @@ case "$2" in
        -m)
               #Multiple paths option
               TOOL="$DIR_NAME/utils/generateSmallPathTestCase.sh" 
+              LIB_CHOICE=klee/LT/build
+              export LIB_CHOICE
               ;;
         *)
               TOOL="$DIR_NAME/utils/generateTestCase.sh" 
@@ -31,11 +33,12 @@ $DIR_NAME/utils/getEnvConfig.sh experimentConfigdump.txt
 NODE_LIST_FILE=$DIR_NAME/nodelist
 if [ -f $NODE_LIST_FILE ]; then
 echo "using multiple nodes from $NODE_LIST_FILE"
-PARALLEL="--sshloginfile $NODE_LIST_FILE --env '_'"
+PARALLEL="--sshloginfile $NODE_LIST_FILE --env _"
 else
 PARALLEL=""
 fi
 
 #seq 10 | xargs -L1 -I{} csmith -o test{}.c
-seq 10 | parallel $PARALLEL --no-notice  -L1 -I{}  "$TOOL test{}.c 2> /dev/null"
+seq 10 | parallel $PARALLEL --no-notice  -L1 -I{}  "$TOOL $PWD/test{}.c 2> /dev/null"
+#seq 10 | parallel $PARALLEL --no-notice  -L1 -I{}  "echo \$PWD \`hostname -I\`"
 
