@@ -22,7 +22,7 @@ while
     rm  ${TMP_FILE}.out
     [ ${PATH_CNT:-1} -lt 30 -o $HALTED -eq 0 ];
 do
-    if [  ]; then
+    if [ $HALTED -eq 0 ]; then
         TIMEOUT_CNT=$((TIMEOUT_CNT + 1))
     fi
     continue
