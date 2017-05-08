@@ -11,6 +11,8 @@ public:
   virtual void run(const MatchFinder::MatchResult &Result) {
     // The matched 'if' statement was bound to 'ifStmt'.
     if (const IfStmt *IfS = Result.Nodes.getNodeAs<IfStmt>("ifStmt")) {
+      llvm::errs() << "Found if\n==================================\n";
+      if(IfS->getThen() == NULL || IfS->getElse() == NULL) return;
       Rewrite.ReplaceText(IfS->getThen()->getSourceRange(), IfS->getElse()->getSourceRange());
       Rewrite.ReplaceText(IfS->getElse()->getSourceRange(), IfS->getThen()->getSourceRange());
 
