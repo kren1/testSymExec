@@ -11,7 +11,7 @@ $CLANG -xc -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $BC_FILE -c -emit-llvm $1 2> /d
 $LINK -o=$LINKED_BC_FILE $BC_FILE $INST_LIB_PATH/$LIB_CHOICE/*.bc &&\
 START=$(date +%s.%N) &&\
 rmdir $KLEE_OUT_DIR &&\
-timeout -s SIGKILL 120 klee -max-time=100 -allow-external-sym-calls  -output-dir=$KLEE_OUT_DIR $LINKED_BC_FILE
+timeout -s SIGKILL 120 timeout 100 klee -allow-external-sym-calls  -output-dir=$KLEE_OUT_DIR $LINKED_BC_FILE
 EXIT_STATUS=$?
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
 
