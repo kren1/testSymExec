@@ -12,7 +12,7 @@ int main() {
     if( i < 0) {
       printf("if branch i:%d",i);
     } else {
-      for(;0;) ;
+      for(;0;);
       printf("else branc i:%d",i);
     }
   } 

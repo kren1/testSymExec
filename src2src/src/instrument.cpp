@@ -54,6 +54,7 @@ public:
       } else if (swapBranch) {
         swapBranches( ctx, rw);
       } else if (deadCond) {
+        llvm::errs() << "handle top level ============== other stuff\n";
         injectDeadConditions( ctx, rw);
       } else{
          llvm::errs() << "other stuff\n";
@@ -84,7 +85,7 @@ public:
     std::stringstream fileLocation;
     fileLocation << "\nchar*  __klee__instr_filename = \"" << basename(fileName) << ".out\";\n";
     
-    if(!toSSA && !deadCond)
+    if(!toSSA && !deadCond && !swapBranch)
         TheRewriter.InsertText(SM.getLocForStartOfFile(SM.getMainFileID()), fileLocation.str(), true, true);
     
     
