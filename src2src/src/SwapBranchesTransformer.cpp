@@ -25,18 +25,36 @@ public:
 
       std::string then;
       std::string els;
+      std::string cond;
+      std::string all;
       
       llvm::raw_string_ostream::raw_string_ostream ss(then);
       llvm::raw_string_ostream::raw_string_ostream sse(els);
-//      IfS->getThen() //store somehow
+      llvm::raw_string_ostream::raw_string_ostream ssc(cond);
+      llvm::raw_string_ostream::raw_string_ostream ssa(all);
+
       IfS->getThen()->printPretty(ss,NULL,Policy,0 );
       IfS->getElse()->printPretty(sse,NULL,Policy,0 );
+      ssc << "!( ";
+      IfS->getCond()->printPretty(ssc,NULL,Policy,0);
+      ssc << " -)";
 
-      Rewrite.ReplaceText(IfS->getThen()->getSourceRange(), StringRef(sse.str()));
-      Rewrite.ReplaceText(IfS->getElse()->getSourceRange(), StringRef(ss.str()) );
+      ssa << "if( !(";
+      IfS->getCond()->printPretty(ssa,NULL,Policy,0);
+      ssa << " )) ";
+      IfS->getElse()->printPretty(ssa,NULL,Policy,0 );
+      ssa << "else";
+      IfS->getThen()->printPretty(ssa,NULL,Policy,0 );
+ 
+      
+      Rewrite.ReplaceText(IfS->getSourceRange(), StringRef(ssa.str()));
 
-      Rewrite.InsertText(IfS->getCond()->getLocStart(), "!(");
-      Rewrite.InsertText(IfS->getCond()->getLocEnd().getLocWithOffset(1), ")");
+      //Rewrite.ReplaceText(IfS->getThen()->getSourceRange(), StringRef(sse.str()));
+      //Rewrite.ReplaceText(IfS->getElse()->getSourceRange(), StringRef(ss.str()) );
+      //Rewrite.ReplaceText(IfS->getCond()->getSourceRange(), StringRef(ssc.str()) );
+
+      //Rewrite.InsertTextBefore(IfS->getCond()->getLocStart(), "!(");
+      //Rewrite.InsertTextAfter(IfS->getCond()->getLocEnd().getLocWithOffset(1), ")");
       visitedIfs.insert(IfS);
       
     }
