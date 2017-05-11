@@ -1,5 +1,6 @@
 #!/bin/bash
 NULL=/dev/null
+NULL=coverage
 DIR_NAME=$(dirname "$(realpath $0)")
 EXPERIMENT_LOG=${PWD##*/}.log
 export EXPERIMENT_LOG
