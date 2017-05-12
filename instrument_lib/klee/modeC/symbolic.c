@@ -33,13 +33,13 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
 #define PADDING 10
 #define FILE_BUFF_SIZE 1000
 
-#define DEBUG 0
-#define DEBUG_DET 0
+//#define DEBUG 0
+//#define DEBUG_DATA 0
+//#define DEBUG_DET 0
 void print_symbolic(const char* name, int64_t *val, char size)
 {
 #ifdef LOWEST_SOLUTION
     int64_t ub, lb, lbForUb, ubForlb, prev, h;
-    printf("before swtich\n");
     switch(size)
     {
         case 8: ub = SCHAR_MAX; lb = SCHAR_MIN; h = *(int8_t*)val; break;
@@ -47,7 +47,7 @@ void print_symbolic(const char* name, int64_t *val, char size)
         case 32: ub = INT_MAX; lb = INT_MIN; h = *(int32_t*)val;   break;
         default: printf("Unimpleneted size %d, aboritng\n",size); abort();
     }
-    printf("after swtich %d\n",h);
+//    printf("after swtich %d\n",h);
     prev = ub + PADDING;
     lbForUb = lb;
 
@@ -60,44 +60,50 @@ void print_symbolic(const char* name, int64_t *val, char size)
     fprintf(stderr, "#0 lb: %ld, ub: %ld\n", lb, ub);
     fprintf(stderr,"test: %s\n", test_case_id);
     #endif
-
-    while(prev - ub > 0) {
+/*
+    while((prev - ub > 0)){
         #ifdef DEBUG_DET
-        fprintf(stderr,"\t#a lb: %ld, ub: %ld, prev: %ld\n", lb, ub, prev);
+        fprintf(stderr,"\t#a lbForUb: %ld, ub: %ld, prev: %ld\n", lbForUb, ub, prev);
         #endif
-        if(h < ub){
-           prev = ub;
-           ub = ub - (ub - lbForUb) / 2;
-        } 
         //at this point ub is smaller than h can be, and prev is ub that can still shrink
+        if(!(h < ub)){
+            lbForUb = ub;
+            ub = prev;
+            prev = ub + 2;
+        } 
         else {
-          lbForUb = ub;
-          ub = prev;
-          prev = ub + 2;
+          prev = ub;
+          ub = ub - (ub - lbForUb) / 2;
         }
         #ifdef DEBUG_DET
-        fprintf(stderr,"\t#b lb: %ld, ub: %ld, prev: %ld\n", lb, ub, prev);
+        fprintf(stderr,"\t#b lbForUb: %ld, ub: %ld, prev: %ld\n", lbForUb, ub, prev);
         #endif
-    }
-
+    }*/
     //mirror case for lower bound
     ubForlb = ub;
     prev = lb - PADDING;
     while(lb - prev > 0) {
-      if(h >= lb) {
-          prev = lb;
-          lb = lb + (ubForlb - lb) / 2;
-      } else {
-         ubForlb = lb;
-         lb = prev; 
-         prev = lb - 2;
-      }
+        #ifdef DEBUG_DET
+        fprintf(stderr,"\t#a lb: %ld, ubForlb: %ld, prev: %ld\n", lb, ubForlb, prev);
+        #endif
+        if(!(h >= lb)) {
+            ubForlb = lb;
+            lb = prev; 
+            prev = lb - 2;
+        } else {
+            prev = lb;
+            lb = lb + (ubForlb - lb) / 2;
+        }
+        #ifdef DEBUG_DET
+        fprintf(stderr,"\t#b lb: %ld, ubForlb: %ld, prev: %ld\n", lb, ubForlb, prev);
+        #endif
     }
 
     //At this point we have narrowed down ub and lb to the lowest range
     FILE *fp = fopen(locks_file, "rb");
     #ifdef DEBUG
     fprintf(stderr,"#2 lb: %ld, ub: %ld\n", lb, ub);
+    fprintf(stderr,"fp: %p\n",fp);
     #endif
 
     if(fp != NULL) {
@@ -114,6 +120,9 @@ void print_symbolic(const char* name, int64_t *val, char size)
         //If we see our id in the file, we are not in the branch    
         //With the lowest number in range, under dfs assumption
         if(strstr(file_buf,test_case_id) != NULL) {
+            #ifdef DEBUG
+            fprintf(stderr, "silent exit for lb: %d, ub: %d\n", lb, ub);
+            #endif
             klee_silent_exit(0);
         }
     }
