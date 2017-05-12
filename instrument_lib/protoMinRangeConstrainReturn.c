@@ -62,7 +62,7 @@ int main() {
   lb = min_int;
   prev = lb - 10;
   while(lb - prev > 0) {
-    if(h > lb) {
+    if(h >= lb) {
         prev = lb;
         lb = lb + (ubForlb - lb) / 2;
     } else {
