@@ -30,12 +30,41 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
  
 }
 
-#define PADDING 10
-#define FILE_BUFF_SIZE 1000
 
-//#define DEBUG 0
-//#define DEBUG_DATA 0
-//#define DEBUG_DET 0
+#define FILE_BUFF_SIZE 1000
+// #define DEBUG_DATA 0
+int is_first_branch(char* locks_file, char* test_case_id) {
+    FILE *fp = fopen(locks_file, "rb");
+    #ifdef DEBUG_DATA
+    fprintf(stderr,"fp: %p\n",fp);
+    #endif
+
+    if(fp != NULL) {
+        char *file_buf = calloc(FILE_BUFF_SIZE,1);
+        ssize_t rd = fread(file_buf, 1, FILE_BUFF_SIZE, fp);
+        if(rd == 0) {
+            fprintf(stderr,"Failed to read errno %d\n",errno);
+            abort();
+        }
+        #ifdef DEBUG_DATA
+        fprintf(stderr, "data %s \n", file_buf);
+        #endif
+        fclose(fp);
+        //If we see our id in the file, we are not in the branch    
+        //With the lowest number in range, under dfs assumption
+        if(strstr(file_buf,test_case_id) != NULL) {
+            free(file_buf);
+            return 0;
+        }
+        free(file_buf);
+    }
+    return 1;
+}
+
+#define PADDING 10
+
+#define DEBUG 0
+#define DEBUG_DET 0
 void print_symbolic(const char* name, int64_t *val, char size)
 {
 #ifdef LOWEST_SOLUTION
@@ -60,32 +89,30 @@ void print_symbolic(const char* name, int64_t *val, char size)
     fprintf(stderr, "#0 lb: %ld, ub: %ld\n", lb, ub);
     fprintf(stderr,"test: %s\n", test_case_id);
     #endif
-/*
-    while((prev - ub > 0)){
-        #ifdef DEBUG_DET
-        fprintf(stderr,"\t#a lbForUb: %ld, ub: %ld, prev: %ld\n", lbForUb, ub, prev);
-        #endif
+    int iter_num = 0;
+    while((prev - ub > 0) && is_first_branch(locks_file, test_case_id)){
+        if(h < ub){
+          prev = ub;
+          ub = ub - (ub - lbForUb) / 2;
+        } 
         //at this point ub is smaller than h can be, and prev is ub that can still shrink
-        if(!(h < ub)){
+        else {
             lbForUb = ub;
             ub = prev;
             prev = ub + 2;
-        } 
-        else {
-          prev = ub;
-          ub = ub - (ub - lbForUb) / 2;
         }
+        iter_num++;
         #ifdef DEBUG_DET
-        fprintf(stderr,"\t#b lbForUb: %ld, ub: %ld, prev: %ld\n", lbForUb, ub, prev);
+        fprintf(stderr,"\t#U lbForUb: %ld, ub: %ld, prev: %ld \t\t\t\tin: %d\n", lbForUb, ub, prev, iter_num);
         #endif
-    }*/
+    }
+    #ifdef DEBUG
+    fprintf(stderr, "#1 lb: %ld, ub: %ld\n", lb, ub);
+    #endif
     //mirror case for lower bound
     ubForlb = ub;
     prev = lb - PADDING;
-    while(lb - prev > 0) {
-        #ifdef DEBUG_DET
-        fprintf(stderr,"\t#a lb: %ld, ubForlb: %ld, prev: %ld\n", lb, ubForlb, prev);
-        #endif
+    while(lb - prev > 0 && is_first_branch(locks_file, test_case_id)) {
         if(!(h >= lb)) {
             ubForlb = lb;
             lb = prev; 
@@ -95,42 +122,22 @@ void print_symbolic(const char* name, int64_t *val, char size)
             lb = lb + (ubForlb - lb) / 2;
         }
         #ifdef DEBUG_DET
-        fprintf(stderr,"\t#b lb: %ld, ubForlb: %ld, prev: %ld\n", lb, ubForlb, prev);
+        fprintf(stderr,"\t#L lb: %ld, ubForlb: %ld, prev: %ld\n", lb, ubForlb, prev);
         #endif
     }
 
     //At this point we have narrowed down ub and lb to the lowest range
-    FILE *fp = fopen(locks_file, "rb");
-    #ifdef DEBUG
-    fprintf(stderr,"#2 lb: %ld, ub: %ld\n", lb, ub);
-    fprintf(stderr,"fp: %p\n",fp);
-    #endif
-
-    if(fp != NULL) {
-        char *file_buf = calloc(FILE_BUFF_SIZE,1);
-        ssize_t rd = fread(file_buf, 1, FILE_BUFF_SIZE, fp);
-        if(rd == 0) {
-            fprintf(stderr,"Failed to read errno %d\n",errno);
-            abort();
-        }
-        #ifdef DEBUG_DATA
-        fprintf(stderr, "data %s \n", file_buf);
+    if(!is_first_branch(locks_file, test_case_id)) {
+        #ifdef DEBUG
+        fprintf(stderr, "silent exit for lb: %d, ub: %d\n", lb, ub);
         #endif
-        fclose(fp);
-        //If we see our id in the file, we are not in the branch    
-        //With the lowest number in range, under dfs assumption
-        if(strstr(file_buf,test_case_id) != NULL) {
-            #ifdef DEBUG
-            fprintf(stderr, "silent exit for lb: %d, ub: %d\n", lb, ub);
-            #endif
-            klee_silent_exit(0);
-        }
+        klee_silent_exit(0);
     }
     #ifdef DEBUG
     fprintf(stderr,"GOOD BRANCH\n");
     #endif
 
-    fp = fopen(locks_file,"a");
+    FILE* fp = fopen(locks_file,"a");
     fprintf(fp, "%s", test_case_id);
     fclose(fp);
 #endif

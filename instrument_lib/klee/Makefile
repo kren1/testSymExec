@@ -6,6 +6,9 @@ all: funCalls.bc symbolic.bc
 clean:
 	$(MAKE) -C modeC clean
 	$(MAKE) -C Divisor clean
+	rm -r LT/
+	rm -r LTE/
+	rm -r Range/
 
 .PHONY: mkdirs
 mkdirs:
@@ -24,8 +27,3 @@ symbolic.bc: mkdirs symbolic.c ../common/constrainers/*.h
 	${CLANG} ${FLAGS} -D LTE_CONSTRAIN -c -emit-llvm -o LTE/${BUILD}/symbolic.bc symbolic.c
 	${CLANG} ${FLAGS} -D RANGE_CONSTRAIN -c -emit-llvm -o Range/${BUILD}/symbolic.bc symbolic.c
 
-.PHONY : clean
-clean: 
-	rm -r LT/
-	rm -r LTE/
-	rm -r Range/
