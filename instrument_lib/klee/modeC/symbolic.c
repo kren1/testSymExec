@@ -64,7 +64,7 @@ int is_first_branch(char* locks_file, char* test_case_id) {
 #define PADDING 10
 
 #define DEBUG 0
-#define DEBUG_DET 0
+//#define DEBUG_DET 0
 void print_symbolic(const char* name, int64_t *val, char size)
 {
 #ifdef LOWEST_SOLUTION
@@ -87,7 +87,7 @@ void print_symbolic(const char* name, int64_t *val, char size)
 
     #ifdef DEBUG
     fprintf(stderr, "#0 lb: %ld, ub: %ld\n", lb, ub);
-    fprintf(stderr,"test: %s\n", test_case_id);
+    fprintf(stderr,"for varibale %s, test: %s\n", name, test_case_id);
     #endif
     int iter_num = 0;
     while((prev - ub > 0) && is_first_branch(locks_file, test_case_id)){
@@ -134,7 +134,7 @@ void print_symbolic(const char* name, int64_t *val, char size)
         klee_silent_exit(0);
     }
     #ifdef DEBUG
-    fprintf(stderr,"GOOD BRANCH\n");
+    fprintf(stderr,"GOOD BRANCH  lb: %ld, ub: %ld\n", lb, ub);
     #endif
 
     FILE* fp = fopen(locks_file,"a");
