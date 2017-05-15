@@ -61,6 +61,6 @@ void print_symbolic(const char* name, int64_t *val, char size)
         case 8: printf("%s: %hhd\n",name,*(int8_t*)val); break;
         case 16: printf("%s: %hd\n",name,*(int16_t*)val); break;
         case 32: printf("%s: %d\n",name,*(int32_t*)val); break;
-        case 64: printf("%s: %lld\n",name,*val); break;
+        case 64: printf("%s: %ld\n",name,*val); break;
     }
 }

@@ -31,12 +31,12 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
 }
 
 
-#define FILE_BUFF_SIZE 1000
-// #define DEBUG_DATA 0
+#define FILE_BUFF_SIZE 100000
+//#define DEBUG_DATA 0
 int is_first_branch(char* locks_file, char* test_case_id) {
     FILE *fp = fopen(locks_file, "rb");
     #ifdef DEBUG_DATA
-    fprintf(stderr,"fp: %p\n",fp);
+    fprintf(stderr,"locks file: %s, fp: %p\n",locks_file, fp);
     #endif
 
     if(fp != NULL) {
@@ -46,8 +46,12 @@ int is_first_branch(char* locks_file, char* test_case_id) {
             fprintf(stderr,"Failed to read errno %d\n",errno);
             abort();
         }
+        if(rd == FILE_BUFF_SIZE) {
+            fprintf(stderr, "File %s, could not be read entierly, aborting...", locks_file);
+            abort();
+        }
         #ifdef DEBUG_DATA
-        fprintf(stderr, "data %s \n", file_buf);
+        fprintf(stderr, "read: %d, data %s \n", rd, file_buf);
         #endif
         fclose(fp);
         //If we see our id in the file, we are not in the branch    
@@ -63,7 +67,7 @@ int is_first_branch(char* locks_file, char* test_case_id) {
 
 #define PADDING 10
 
-#define DEBUG 0
+//#define DEBUG 0
 //#define DEBUG_DET 0
 void print_symbolic(const char* name, int64_t *val, char size)
 {
@@ -82,12 +86,12 @@ void print_symbolic(const char* name, int64_t *val, char size)
 
     char test_case_id[20];
     char locks_file[20];
-    snprintf(&test_case_id, 20, "%d-", rand());
-    snprintf(&locks_file, 20, "%s.lock", __klee__instr_filename);
+    snprintf(test_case_id, 20, "%d-", rand());
+    snprintf(locks_file, 20, "%s.lock", __klee__instr_filename);
 
     #ifdef DEBUG
+    fprintf(stderr,"for variable %s, test: %s\n", name, test_case_id);
     fprintf(stderr, "#0 lb: %ld, ub: %ld\n", lb, ub);
-    fprintf(stderr,"for varibale %s, test: %s\n", name, test_case_id);
     #endif
     int iter_num = 0;
     while((prev - ub > 0) && is_first_branch(locks_file, test_case_id)){
@@ -129,7 +133,7 @@ void print_symbolic(const char* name, int64_t *val, char size)
     //At this point we have narrowed down ub and lb to the lowest range
     if(!is_first_branch(locks_file, test_case_id)) {
         #ifdef DEBUG
-        fprintf(stderr, "silent exit for lb: %d, ub: %d\n", lb, ub);
+        fprintf(stderr, "silent exit for lb: %ld, ub: %ld\n", lb, ub);
         #endif
         klee_silent_exit(0);
     }
