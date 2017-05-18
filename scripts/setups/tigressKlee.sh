@@ -5,7 +5,7 @@ source $DIR/../settings.sh
 
 
 #LIB_CHOICE=klee/LT/build
-LIB_CHOICE=klee/modeC/build
+LIB_CHOICE=klee/modeC/build/wd
 INSTRUMENTER=${GH_PROJECT_ROOT}/scripts/EMI/tigressFlatten.sh
 COMPILE_AND_RUN_1=${GH_PROJECT_ROOT}/scripts/CaR/kleeCompileAndRun.sh
 COMPILE_AND_RUN_2=${GH_PROJECT_ROOT}/scripts/CaR/kleeCompileAndRun.sh

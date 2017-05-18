@@ -1,6 +1,7 @@
 all: funCalls.bc symbolic.bc
 	$(MAKE) -C modeC
 	$(MAKE) -C Divisor
+	$(MAKE) -C crosscheck_helper
 
 .PHONY: clean 
 clean:

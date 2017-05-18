@@ -85,9 +85,9 @@ void print_symbolic(const char* name, int64_t *val, char size)
     lbForUb = lb;
 
     char test_case_id[20];
-    char locks_file[20];
+    char locks_file[30];
     snprintf(test_case_id, 20, "%d-", rand());
-    snprintf(locks_file, 20, "%s.lock", __klee__instr_filename);
+    snprintf(locks_file, 30, "%s.lock", __klee__instr_filename);
 
     #ifdef DEBUG
     fprintf(stderr,"for variable %s, test: %s\n", name, test_case_id);
