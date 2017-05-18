@@ -15,6 +15,7 @@ NULL=/dev/null
 ORIG_LOC=$(realpath $1)
 
 #Here we use > to make sure info file is created fresh
+set -x
 echo $1 > $INFO_FILE
 
 $INSTRUMENTER $1 $INST_FILE 2> $NULL &&\
