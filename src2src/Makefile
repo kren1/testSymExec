@@ -125,7 +125,7 @@ emit_build_config: make_builddir
 make_builddir:
 	@test -d $(BUILDDIR) || mkdir $(BUILDDIR)
 
-$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/ToSSATransformer ${BUILDDIR}/Symbolizer ${BUILDDIR}/FunctionLogger $(BUILDDIR)/DeadConditionTransformer $(BUILDDIR)/SwapBranchesTransformer
+$(BUILDDIR)/tool: ${BUILDDIR}/instrument ${BUILDDIR}/ToSSATransformer ${BUILDDIR}/Symbolizer ${BUILDDIR}/FunctionLogger $(BUILDDIR)/DeadConditionTransformer $(BUILDDIR)/SwapBranchesTransformer $(BUILDDIR)/RemoveFunction
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
@@ -141,6 +141,10 @@ $(BUILDDIR)/FunctionLogger: src/FunctionLogger.cpp src/FunctionLogger.hpp
 $(BUILDDIR)/Symbolizer: src/Symbolizer.cpp src/Symbolizer.hpp
 	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
 		  -o $@
+$(BUILDDIR)/RemoveFunction: src/RemoveFunction.cpp src/RemoveFunction.hpp
+	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
+		  -o $@
+
 
 $(BUILDDIR)/ToSSATransformer: src/ToSSATransformer.cpp src/ToSSATransformer.hpp
 	$(CXX) -c $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $< \
