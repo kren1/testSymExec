@@ -16,6 +16,10 @@ $MAIN_REMOVE $1 2>$NULL  | tail -n+3 > $VERT_1
 $DIR_NAME/prefix.sh 'pref_' $2 > $PREFIXED 
 $MAIN_REMOVE $PREFIXED 2>$NULL  > $VERT_2
 
+cat $VERT_2 > $3
+echo "#define RANDOM_RUNTIME_H" >> $3
+cat $VERT_1 >> $3
+
 LIB_CHOICE=klee/crosscheck_helper/
-$NATIVE_CAR $1 $ORIG_NAME | grep -v "checksum = " | cat $VERT_1 $VERT_2 - > $3
+$NATIVE_CAR $1 $ORIG_NAME | grep -v "checksum = " >> $3
 rm $VERT_1 $VERT_2 $PREFIXED
