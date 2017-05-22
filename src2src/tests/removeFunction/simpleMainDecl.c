@@ -1,5 +1,5 @@
 // RUN: %p/../../build/tool -r %s -- > %t1
-// RUN: %clang -xc -c -o %t2 %t1 && grep -V 'main'
+// RUN: %clang -xc -c -o %t2 %t1 && grep -v 'main' %t1
 #include <stdio.h>
 #include <stdbool.h>
 int main();
