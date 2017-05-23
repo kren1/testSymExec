@@ -15,9 +15,9 @@ NULL=/dev/null
 ORIG_LOC=$(realpath $1)
 
 #Here we use > to make sure info file is created fresh
-set -x
 echo $1 > $INFO_FILE
 
+set -o pipefail
 $INSTRUMENTER $1 $INST_FILE 2> $NULL &&\
 $DIR_NAME/klee_crosscheck_prepare.sh $1 $INST_FILE $CROSSCHECK_VER &&\
 $COMPILE_AND_RUN_1 $CROSSCHECK_VER $ORIG_LOC 2>&1 | tee  $CROSS_RUN | grep -v -P 'func_\d+$'>&2 &&\

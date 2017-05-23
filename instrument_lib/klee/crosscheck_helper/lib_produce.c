@@ -22,6 +22,7 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         c_file = fopen(__klee__instr_filename, "w");
         fprintf(c_file, "#include <assert.h>\n");
         fprintf(c_file, "int main() {\n");
+        fprintf(c_file, "\t megaInit();\n");
         snprintf(pref,10, "%s", "pref_");
     }
     char pref_name[40];
