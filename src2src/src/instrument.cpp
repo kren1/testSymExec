@@ -23,6 +23,7 @@
 #include "DeadConditionTransformer.hpp"
 #include "SwapBranchesTransformer.hpp"
 #include "Symbolizer.hpp"
+#include "RemoveFunction.hpp"
 
 using namespace clang;
 using namespace clang::driver;
@@ -36,7 +37,8 @@ static llvm::cl::opt<bool> deadCond ("deadCond", llvm::cl::desc("Perform dead co
 
 static llvm::cl::opt<bool> swapBranch ("swapBranches", llvm::cl::desc("Swap if and else branch order"),
                                            llvm::cl::cat(ToolingSampleCategory));
-
+static llvm::cl::opt<bool> removeMain("r", llvm::cl::desc("Remove  function main"), 
+                                                 llvm::cl::cat(ToolingSampleCategory));
 
 
 class MyASTConsumer : public ASTConsumer {
@@ -53,6 +55,8 @@ public:
         toSSATransformer.TraverseDecl(*b);
       } else if (swapBranch) {
         swapBranches( ctx, rw);
+      } else if(removeMain) {
+        removeFunction("main", ctx, rw);
       } else if (deadCond) {
         llvm::errs() << "handle top level ============== other stuff\n";
         injectDeadConditions( ctx, rw);
@@ -85,7 +89,7 @@ public:
     std::stringstream fileLocation;
     fileLocation << "\nchar*  __klee__instr_filename = \"" << basename(fileName) << ".out\";\n";
     
-    if(!toSSA && !deadCond && !swapBranch)
+    if(!toSSA && !deadCond && !swapBranch && !removeMain)
         TheRewriter.InsertText(SM.getLocForStartOfFile(SM.getMainFileID()), fileLocation.str(), true, true);
     
     
