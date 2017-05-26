@@ -12,6 +12,7 @@ class FunctionLogger : public RecursiveASTVisitor<FunctionLogger> {
 public:
     FunctionLogger(Rewriter &R, ASTContext *C);
     bool VisitFunctionDecl(FunctionDecl *f);
+    bool VisitCompoundStmt(CompoundStmt *compStmt);
 private:
     Rewriter &TheRewriter;
     ASTContext *Context;

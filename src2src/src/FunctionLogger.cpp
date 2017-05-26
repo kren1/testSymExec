@@ -11,6 +11,7 @@ bool FunctionLogger::VisitFunctionDecl(FunctionDecl *f) {
       // Function name
       DeclarationName DeclName = f->getNameInfo().getName();
       std::string FuncName = DeclName.getAsString();
+      if(FuncName == "main") return false;
       std::stringstream logFunction;
       logFunction << "\n logFunction(\"" <<  FuncName << "\");\n";
       TheRewriter.InsertText(FuncBody->getLocStart().getLocWithOffset(1), logFunction.str(), true, true);
@@ -18,3 +19,13 @@ bool FunctionLogger::VisitFunctionDecl(FunctionDecl *f) {
   return true;
 }
 
+int branchId = 0;
+
+bool FunctionLogger::VisitCompoundStmt(CompoundStmt *compStmt) {
+      std::stringstream logFunction;
+      logFunction << "\n#ifdef BRANCH_LOG\n";
+      logFunction << "logFunction(\"" << branchId++ << "\");\n";
+      logFunction << "#endif\n";
+      TheRewriter.InsertText(compStmt->getLocStart().getLocWithOffset(1), logFunction.str(), true, true);
+  return true;
+}
