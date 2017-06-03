@@ -22,15 +22,15 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         c_file = fopen(__klee__instr_filename, "w");
         fprintf(c_file, "#include <assert.h>\n");
         fprintf(c_file, "int main() {\n");
-        fprintf(c_file, "\t megaInit();\n");
+//        fprintf(c_file, "\t megaInit();\n");
         snprintf(pref,10, "%s", "pref_");
     }
     char pref_name[40];
     snprintf(pref_name, 40, "%s%s", pref, name);
     
-    fprintf(c_file, "\tklee_make_symbolic(&%s,sizeof %s, \"%s\");\n", name, name, name);
-    fprintf(c_file, "\tklee_make_symbolic(&%s,sizeof %s, \"%s\");\n", pref_name, pref_name, pref_name);
-    fprintf(c_file, "\tklee_assume(%s == %s);\n\n", name, pref_name);
+    fprintf(c_file, "\tsymbolize_and_constrain_u(&%s,sizeof %s,50, \"%s\");\n", name, name, name);
+    fprintf(c_file, "\tsymbolize_and_constrain_u(&%s,sizeof %s,50, \"%s\");\n", pref_name, pref_name, pref_name);
+    fprintf(c_file, "\tif(%s != %s) klee_silent_exit(0);\n\n", name, pref_name);
 
 
 }
