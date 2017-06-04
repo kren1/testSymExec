@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+void klee_silent_exit(int x){}
 
 
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {}

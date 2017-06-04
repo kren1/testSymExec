@@ -18,7 +18,7 @@ DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
 #Prints the function call trace to stdout and deletes it for cleanup. 
 cat $(basename $2).out &&\
 rm $(basename $2).out
-rm $(basename $2).out.lock 2> /dev/null
+rm $(basename $2).out.lock /tmp/$(basename $2).out.lock 2> /dev/null
 
 klee-stats $KLEE_OUT_DIR >&2
 

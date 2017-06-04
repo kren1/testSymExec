@@ -24,10 +24,16 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
 }
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
-    if(symbolizeCallCnt > 8) return;
-    symbolizeCallCnt++;
-    klee_make_symbolic(var, size, name);
- 
+    if(value >  1294967295) return;
+	uint32_t var_value;
+    switch(size)
+    {
+        case 1: __CrestUChar((uint8_t*)var); var_value = *(uint8_t*)var; break;
+        case 2: __CrestUShort((uint16_t*)var); var_value = *(uint16_t*)var; break;
+        case 4: __CrestUInt((uint32_t*)var); var_value = *(uint32_t*)var; break;
+        case 8: return;
+    }
+
 }
 
 
