@@ -15,7 +15,7 @@ FILE* c_file;
 char pref[10];
 
 
-void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
+void symbolize_and_constrain_u(void *var, int size, uint32_t value, char* name) {
     call_cnt++;
 
     if(call_cnt == 1) {
