@@ -18,6 +18,7 @@
 static uint64_t magic_symbols[SYM_SIZE] = {0,0,0,3};
 static uint8_t *symarray = (uint8_t*)magic_symbols;
 static int sym_pos = 0;
+void klee_silent_exit(int i) {exit(i);}
 
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {}
 
@@ -36,7 +37,9 @@ void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* na
     }
 
     sym_pos =  sym_pos + size;
+    #ifndef NO_SYMBOLIZE
     CONSTRAIN(v, value, exit(0));
+    #endif
 }
 
 void print_symbolic(const char* name, uint64_t *val, char size)
@@ -51,6 +54,6 @@ void print_symbolic(const char* name, uint64_t *val, char size)
         case 32: v = *(int32_t*)val; break;
         case 64: v = *(int64_t*)val; break;
     }
-    printf("%s: %lld\n",name,v);
+    printf("%s: %llx\n",name,v);
 
 }
