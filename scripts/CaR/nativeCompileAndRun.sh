@@ -5,12 +5,21 @@ source $DIR_NAME/../settings.sh
 NULL=/dev/null
 #NULL=/dev/tty
 
+case $3 in 
+    -d)
+    NAT_LIB=native/build
+    ;;
+    *)
+    NAT_LIB=${NAT_LIB_CHOICE:-$LIB_CHOICE}
+    ;;
+esac
+
+
 rm $(basename $2).out 2> $NULL
 O_FILE=$(mktemp)
 LINKED_FILE=$(mktemp)
-echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -I$INST_LIB_PATH -I$CSMITH_RUNTIME -o $O_FILE - 2> $NULL &&\
-#$CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/native/build/*.o 2> $NULL &&\
-$CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/$LIB_CHOICE/*.o 2> $NULL &&\
+echo '#include "instrument_lib.h"' | cat - $1 | $CLANG -xc -c -I$INST_LIB_PATH $OTHER_FLAGS  -I$CSMITH_RUNTIME -o $O_FILE - 2> $NULL &&\
+$CLANG -o $LINKED_FILE $O_FILE $INST_LIB_PATH/$NAT_LIB/*.o 2> $NULL &&\
 START=$(date +%s.%N) &&\
 timeout 1 $LINKED_FILE
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\

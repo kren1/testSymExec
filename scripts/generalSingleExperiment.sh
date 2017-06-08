@@ -21,20 +21,33 @@ ORIG_LOC=$(realpath $1)
 #Here we use > to make sure info file is created fresh
 echo $1 > $INFO_FILE
 
+
+BIN_FILE="$1.bin"
+export BIN_FILE
+case $REVERSE in 
+    yes)
+    RUN1=$INST_FILE
+    RUN2=$1
+    ;;
+    *)
+    RUN1=$1
+    RUN2=$INST_FILE
+    ;;
+esac
+
+
+
 #set -x
-$COMPILE_AND_RUN_1 $1 $ORIG_LOC | sort > $ORIG_RUN &&\
-#cat $ORIG_RUN &&\
-#shortcircuit if the previous run timeouts
-#grep timeout $INFO_FILE && exit 0
 $INSTRUMENTER $1 $INST_FILE 2> $NULL &&\
-$COMPILE_AND_RUN_2 $INST_FILE $ORIG_LOC | sort > $EMI_RUN &&\
+$COMPILE_AND_RUN_1 $RUN1 $ORIG_LOC > $ORIG_RUN &&\
+$COMPILE_AND_RUN_2 $RUN2 $ORIG_LOC  > $EMI_RUN &&\
 (!(diff $EMI_RUN $ORIG_RUN |  grep '^> ' ) >&2 || grep timeout $INFO_FILE) &&\
 #(diff $EMI_RUN $ORIG_RUN  >&2 || grep timeout $INFO_FILE) &&\
 echo "SUCCESS"  >> $INFO_FILE || echo "Fail" >> $INFO_FILE
 #cat $ORIG_RUN $INFO_FILE
 
 
-#vimdiff $EMI_RUN $ORIG_RUN 
+vimdiff $EMI_RUN $ORIG_RUN 
 RUN_STATS=$(cat $INFO_FILE | tr '\n' ' ')
 echo $RUN_STATS
 if [ -z "$EXPERIMENT_LOG" ];
@@ -43,4 +56,4 @@ then
 else
     echo "$RUN_STATS" >> "$EXPERIMENT_LOG";
 fi
-rm $ORIG_RUN $INFO_FILE $EMI_RUN $INST_FILE
+rm $ORIG_RUN $INFO_FILE $EMI_RUN $INST_FILE $BIN_FILE

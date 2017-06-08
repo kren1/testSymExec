@@ -29,7 +29,7 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
     uint8_t buf[size];
     uint8_t offset = 0;
     if(path_file == NULL) {
-        path_file = fopen("blarp.bin","rb");
+        path_file = fopen(getenv("BIN_FILE"),"rb");
 
         assert(path_file != NULL);
         pid_t pid = fork();
@@ -37,7 +37,7 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
            int status;
            //patrent code
            waitpid(pid, &status, 0);
-           fprintf(stderr,"parent file pos %ld, %d\n", ftell(path_file), errno);
+//           fprintf(stderr,"parent file pos %ld, %d\n", ftell(path_file), errno);
            if(WEXITSTATUS(status) == NO_MORE_READ) {
                 exit(0);
            }
@@ -45,7 +45,7 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         }
         //child continues as is 
     }
-    fprintf(stderr,"child file pos %ld, size %d\n", ftell(path_file), size);
+//    fprintf(stderr,"child file pos %ld, size %d\n", ftell(path_file), size);
     size_t read_bytes = fread(buf ,size, 1, path_file);
     if(read_bytes == 0) exit(NO_MORE_READ);
     uint64_t val;
@@ -56,7 +56,7 @@ void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) 
         case 4: val = *(uint32_t*)buf; break;
         case 8: val = *(uint64_t*)buf; break;
     }
-    fprintf(stderr, "%s(%d): %"PRId64"\n",name, size, (int64_t)val);
+//    fprintf(stderr, "%s(%d): %"PRId64"\n",name, size, (int64_t)val);
 #endif
 }
 

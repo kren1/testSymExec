@@ -30,7 +30,7 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
 #ifdef WRITE_PATH
     if(path_file == NULL) {
-        path_file = fopen("blarp.bin", "wb");
+        path_file = fopen(getenv("BIN_FILE"), "wb");
         assert(path_file != NULL);
     }
 #endif
