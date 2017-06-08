@@ -5,7 +5,9 @@ all: symbolic.o funCalls.o symbolic.bc funCalls.bc libsymbolic.a
 funCalls.o: funCalls.c
 	mkdir -p ${BUILD}
 	mkdir -p ${BUILD}/fuzzballModeA
+	mkdir -p ${BUILD}/pathRead
 	${CLANG} -c -o ${BUILD}/$@ $^
+	${CLANG} -c -o ${BUILD}/pathRead/$@ $^
 	${CLANG} -c -m32 -o ${BUILD}/fuzzballModeA/$@ $^
 
 funCalls.bc: funCalls.c
@@ -15,7 +17,9 @@ funCalls.bc: funCalls.c
 symbolic.o: symbolic.c
 	mkdir -p ${BUILD}
 	mkdir -p ${BUILD}/fuzzballModeA
+	mkdir -p ${BUILD}/pathRead
 	${CLANG} -c -o ${BUILD}/$@ $^
+	${CLANG} -c -D READ_PATH -o ${BUILD}/pathRead/$@ $^
 	${CLANG} -c -m32 -o ${BUILD}/fuzzballModeA/$@ $^
 
 

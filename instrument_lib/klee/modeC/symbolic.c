@@ -153,4 +153,11 @@ void print_symbolic(const char* name, int64_t *val, char size)
         case 32: printf("%s: %d\n",name,*(int32_t*)val); break;
         case 64: printf("%s: %" PRId64 "\n",name,*val); break;
     }
+
+#ifdef WRITE_PATH
+    FILE* path_file = fopen("blarp.bin", "ab");
+    fwrite(val, size / 8, 1, path_file);    
+    fclose(path_file);
+#endif
+
 }
