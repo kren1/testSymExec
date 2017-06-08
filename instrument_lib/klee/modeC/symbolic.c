@@ -8,9 +8,13 @@ To be linked with the file produced when usint Intrumentation.so -funcalls or -s
 #include <limits.h>
 #include <errno.h>
 #include <string.h>
+#include <assert.h>
 static uint32_t symbolizeCallCnt = 0;
 extern char* __klee__instr_filename;
 
+#ifdef WRITE_PATH
+FILE* path_file;
+#endif
 
 void klee_silent_exit(int i)
 {
@@ -24,6 +28,14 @@ void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name
 }
 
 void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
+#ifdef WRITE_PATH
+    if(path_file == NULL) {
+        path_file = fopen("blarp.bin", "wb");
+        assert(path_file != NULL);
+    }
+#endif
+
+
     if(symbolizeCallCnt > 8) return;
     symbolizeCallCnt++;
     klee_make_symbolic(var, size, name);
@@ -155,9 +167,8 @@ void print_symbolic(const char* name, int64_t *val, char size)
     }
 
 #ifdef WRITE_PATH
-    FILE* path_file = fopen("blarp.bin", "ab");
-    fwrite(val, size / 8, 1, path_file);    
-    fclose(path_file);
+    size_t written = fwrite(val, size / 8, 1, path_file);    
+    assert(written == 1);
 #endif
 
 }
