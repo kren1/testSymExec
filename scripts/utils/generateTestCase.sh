@@ -8,6 +8,7 @@ TMP_FILE=$(mktemp)
 while
     csmith -o $1 #--no-math64 --no-return-structs --no-return-unions
     gcc -I$CSMITH_RUNTIME -o $TMP_FILE $1
+    chmod a+x $TMP_FILE
     timeout  2 $TMP_FILE
     [ $? -ne 0 ]; 
 do

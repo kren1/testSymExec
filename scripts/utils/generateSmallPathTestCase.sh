@@ -14,7 +14,7 @@ TIMEOUT_CNT=0
 
 while
     $DIR_NAME/generateTestCase.sh $TMP_FILE 2> /dev/null
-    KLEE_OUT=$(cd $(dirname $TMP_FILE) && $COMPILE_AND_RUN_2 $TMP_FILE 2>&1) 
+    KLEE_OUT=$(cd $(dirname $TMP_FILE) && $COMPILE_AND_RUN_2 $TMP_FILE $TMP_FILE 2>&1) 
     PATH_CNT=$(echo $KLEE_OUT | grep -Po "$REGEX")
     echo $KLEE_OUT | grep "KLEE: halting execution" > /dev/null
     #halted = 0, means the klee exeuction had a timeout
