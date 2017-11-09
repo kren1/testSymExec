@@ -90,7 +90,9 @@ void print_symbolic(const char* name, int64_t *val, char size)
         case 8: ub = SCHAR_MAX; lb = SCHAR_MIN; h = *(int8_t*)val; break;
         case 16: ub = SHRT_MAX; lb = SHRT_MIN; h = *(int16_t*)val; break;
         case 32: ub = INT_MAX; lb = INT_MIN; h = *(int32_t*)val;   break;
-        default: printf("%s: %" PRId64 "\n",name,*val); //printf("Unimpleneted size %d, aboritng\n",size); abort();
+        default: printf("%s: not supported printing of 64bit vars\n", name); return;
+                 //printf("%s: %" PRId64 "\n",name,*val); 
+                 //printf("Unimpleneted size %d, aboritng\n",size); abort();
     }
 //    printf("after swtich %d\n",h);
     prev = ub + PADDING;

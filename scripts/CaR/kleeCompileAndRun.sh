@@ -2,7 +2,7 @@
 #USAGE ./kleeCompileAndRun test1.c test1.c
 DIR_NAME=$(dirname "$(realpath $0)")
 source $DIR_NAME/../settings.sh
-set -x
+#set -x
 NULL=/dev/null
 #NULL=/dev/tty
 
