@@ -17,7 +17,7 @@ $CLANG -xc -I$INST_LIB_PATH -I$CSMITH_RUNTIME $OTHER_FLAGS -o $BC_FILE -c -emit-
 $LINK -o=$LINKED_BC_FILE $BC_FILE $INST_LIB_PATH/$LIB_CHOICE/*.bc &&\
 rm -r $KLEE_OUT_DIR &&\
 START=$(date +%s.%N) &&\
-timeout -s SIGKILL 520 timeout 500 klee -emit-all-errors -use-forked-solver=0 -max-time=590 -watchdog -search=dfs -libc=none -allow-external-sym-calls  -output-dir=$KLEE_OUT_DIR $LINKED_BC_FILE
+timeout -s SIGKILL 520 timeout 500 klee -emit-all-errors $KLEE_OPTIONS -use-forked-solver=0 -max-time=590 -watchdog -search=dfs -libc=none -allow-external-sym-calls  -output-dir=$KLEE_OUT_DIR $LINKED_BC_FILE
 EXIT_STATUS=$?
 DURATION=$(echo "$(date +%s.%N) - $START" | bc) &&\
 
