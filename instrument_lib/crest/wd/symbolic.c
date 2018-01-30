@@ -14,6 +14,7 @@ extern char* __klee__instr_filename;
 
 void klee_silent_exit(int i)
 {
+    exit(0);
 }
 
 void klee_make_symbolic(void* x, int y, char* name)
@@ -23,7 +24,7 @@ void klee_make_symbolic(void* x, int y, char* name)
 void symbolize_and_constrain_s(uint8_t *var, int size, int64_t value, char* name) {
 }
 
-void symbolize_and_constrain_u(void *var, int size, uint64_t value, char* name) {
+void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* name){
     if(value >  1294967295) return;
 	uint32_t var_value;
     switch(size)
@@ -50,10 +51,12 @@ int is_first_branch(char* locks_file, char* test_case_id) {
         ssize_t rd = fread(file_buf, 1, FILE_BUFF_SIZE, fp);
         if(rd == 0) {
             fprintf(stderr,"Failed to read errno %d\n",errno);
+            fclose(fp);
             abort();
         }
         if(rd == FILE_BUFF_SIZE) {
             fprintf(stderr, "File %s, could not be read entierly, aborting...", locks_file);
+            fclose(fp);
             abort();
         }
         #ifdef DEBUG_DATA
@@ -77,14 +80,15 @@ int is_first_branch(char* locks_file, char* test_case_id) {
 //#define DEBUG_DET 0
 void print_symbolic(const char* name, int64_t *val, char size)
 {
+    return;
 #ifdef LOWEST_SOLUTION
     int64_t ub, lb, lbForUb, ubForlb, prev, h;
     switch(size)
     {
-        case 8: ub = SCHAR_MAX; lb = SCHAR_MIN; h = *(int8_t*)val; break;
-        case 16: ub = SHRT_MAX; lb = SHRT_MIN; h = *(int16_t*)val; break;
-        case 32: ub = INT_MAX; lb = INT_MIN; h = *(int32_t*)val;   break;
-        default: printf("%s: %" PRId64 "\n",name,*val); //printf("Unimpleneted size %d, aboritng\n",size); abort();
+        case 8: ub = 128; lb =  -128; h = *(int8_t*)val; break;
+        case 16: ub = 32767; lb = -32767; h = *(int16_t*)val; break;
+        case 32: ub = 2147483648; lb = -2147483648; h = *(int32_t*)val;   break;
+        default: printf("%s: %" PRId64 "\n",name,*val); return;
     }
 //    printf("after swtich %d\n",h);
     prev = ub + PADDING;

@@ -20,6 +20,7 @@ cat $VERT_2 > $3
 echo "#define RANDOM_RUNTIME_H" >> $3
 cat $VERT_1 >> $3
 
-NAT_LIB_CHOICE=klee/crosscheck_helper/
+export NAT_LIB_CHOICE=klee/crosscheck_helper/
+
 $NATIVE_CAR $1 $ORIG_NAME | grep -v "checksum = " >> $3
 rm $VERT_1 $VERT_2 $PREFIXED

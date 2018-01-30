@@ -56,10 +56,12 @@ int is_first_branch(char* locks_file, char* test_case_id) {
         ssize_t rd = fread(file_buf, 1, FILE_BUFF_SIZE, fp);
         if(rd == 0) {
             fprintf(stderr,"Failed to read errno %d\n",errno);
+            fclose(fp); 
             abort();
         }
         if(rd == FILE_BUFF_SIZE) {
             fprintf(stderr, "File %s, could not be read entierly, aborting...", locks_file);
+            fclose(fp);
             abort();
         }
         #ifdef DEBUG_DATA
