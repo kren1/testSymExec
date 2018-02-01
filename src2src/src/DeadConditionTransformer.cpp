@@ -33,7 +33,7 @@ public:
         std::stringstream fact;
         fact << " ( ";
         fact << name << " <= " << num;
-        fact << " || ";
+        fact << " | ";
         fact << name << " > " << num; 
         fact << " ) ";
         return fact.str();
@@ -52,7 +52,7 @@ public:
   virtual void run(const MatchFinder::MatchResult &Result) {
     if (const IfStmt *IfS = Result.Nodes.getNodeAs<IfStmt>("ifStmt")) {
       Rewrite.InsertText(IfS->getCond()->getLocStart(),
-                         factGen.getNextTrue() + " && ",
+                         factGen.getNextTrue() + " & ",
                          true,
                          true);
     }
