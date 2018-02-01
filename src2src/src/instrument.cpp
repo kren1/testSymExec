@@ -48,11 +48,9 @@ public:
                                               functionCallsInstrument(R, C),
                                               ctx(C),
                                               rw(R) {}
-  bool HandleTopLevelDecl(DeclGroupRef DR) override {
-    for (DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
-      // Traverse the declaration using our AST visitor.
+    virtual void HandleTranslationUnit(clang::ASTContext &Context) {
       if(toSSA) {
-        toSSATransformer.TraverseDecl(*b);
+        toSSATransformer.TraverseDecl(Context.getTranslationUnitDecl());
       } else if (swapBranch) {
         swapBranches( ctx, rw);
       } else if(removeMain) {
@@ -62,12 +60,9 @@ public:
         injectDeadConditions( ctx, rw);
       } else{
          llvm::errs() << "other stuff\n";
-         Visitor.TraverseDecl(*b);
-         functionCallsInstrument.TraverseDecl(*b);
+         Visitor.TraverseDecl(Context.getTranslationUnitDecl());
+         functionCallsInstrument.TraverseDecl(Context.getTranslationUnitDecl());
       }
-           (*b)->dump();
-    }
-    return true;
   }
 
 private:
