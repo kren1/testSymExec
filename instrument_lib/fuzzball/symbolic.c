@@ -4,15 +4,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <inttypes.h>
 #include "constrainers/lt.h"
 
-#define SYM_SIZE 4
+#define SYM_SIZE 40
 
  uint8_t  symbolic8() { return 8; };
  uint16_t symbolic16(){ return 16; };
  uint32_t symbolic32(){ return 32; };
 // uint64_t symbolic64(){ return 64; };
+extern char* __klee__instr_filename;
 
 
 static uint64_t magic_symbols[SYM_SIZE] = {0,0,0,3};
@@ -42,10 +44,126 @@ void symbolize_and_constrain_u(uint32_t *var, int size, uint32_t value, char* na
     #endif
 }
 
-void print_symbolic(const char* name, uint64_t *val, char size)
+#define FILE_BUFF_SIZE 100000
+//#define DEBUG_DATA 0
+int is_first_branch(char* locks_file, char* test_case_id) {
+    FILE *fp = fopen(locks_file, "rb");
+    #ifdef DEBUG_DATA
+    fprintf(stderr,"locks file: %s, fp: %p\n",locks_file, fp);
+    #endif
+
+    if(fp != NULL) {
+        char *file_buf = calloc(FILE_BUFF_SIZE,1);
+        ssize_t rd = fread(file_buf, 1, FILE_BUFF_SIZE, fp);
+        if(rd == 0) {
+            fprintf(stderr,"Failed to read\n");
+            fclose(fp);
+            exit(0);
+        }
+        if(rd == FILE_BUFF_SIZE) {
+            fprintf(stderr, "File %s, could not be read entierly, aborting...", locks_file);
+            fclose(fp);
+            exit(0);
+        }
+        #ifdef DEBUG_DATA
+        fprintf(stderr, "read: %d, data %s \n", rd, file_buf);
+        #endif
+        fclose(fp);
+        //If we see our id in the file, we are not in the branch    
+        //With the lowest number in range, under dfs assumption
+        if(strstr(file_buf,test_case_id) != NULL) {
+            free(file_buf);
+            return 0;
+        }
+        free(file_buf);
+    }
+    return 1;
+}
+
+#define PADDING 10
+#ifdef DEBUG_DET
+#define DEBUG
+#endif
+
+//#define DEBUG 0
+//#define DEBUG_DET 0
+void print_symbolic(const char* name, int64_t *val, char size)
 {
-//    if(size != 32) return;
-//    printf("printing ... ");
+#ifdef LOWEST_SOLUTION
+    int64_t ub, lb, lbForUb, ubForlb, prev, h;
+    switch(size)
+    {
+        case 8: ub = 128; lb =  -128; h = *(int8_t*)val; break;
+        case 16: ub = 32767; lb = -32767; h = *(int16_t*)val; break;
+        case 32: ub = 2147483648; lb = -2147483648; h = *(int32_t*)val;   break;
+        default: return;
+    }
+//    printf("after swtich %d\n",h);
+    prev = ub + PADDING;
+    lbForUb = lb;
+
+    char test_case_id[20];
+    char locks_file[30];
+    snprintf(test_case_id, 20, "%d-", rand());
+    snprintf(locks_file, 30, "/tmp/%s.lock", __klee__instr_filename);
+
+    #ifdef DEBUG
+    fprintf(stderr,"for variable %s, test: %s\n", name, test_case_id);
+    fprintf(stderr, "#0 lb: %lld, ub: %lld\n", lb, ub);
+    #endif
+    int iter_num = 0;
+    while((prev - ub > 0) && is_first_branch(locks_file, test_case_id)){
+        if(h < ub){
+          prev = ub;
+          ub = ub - (ub - lbForUb) / 2;
+        } 
+        //at this point ub is smaller than h can be, and prev is ub that can still shrink
+        else {
+            lbForUb = ub;
+            ub = prev;
+            prev = ub + 2;
+        }
+        iter_num++;
+        #ifdef DEBUG_DET
+        fprintf(stderr,"\t#U lbForUb: %lld, ub: %lld, prev: %lld \t\t\t\tin: %d\n", lbForUb, ub, prev, iter_num);
+        #endif
+    }
+    #ifdef DEBUG
+    fprintf(stderr, "#1 lb: %lld, ub: %lld\n", lb, ub);
+    #endif
+    //mirror case for lower bound
+    ubForlb = ub;
+    prev = lb - PADDING;
+    while(lb - prev > 0 && is_first_branch(locks_file, test_case_id)) {
+        if(!(h >= lb)) {
+            ubForlb = lb;
+            lb = prev; 
+            prev = lb - 2;
+        } else {
+            prev = lb;
+            lb = lb + (ubForlb - lb) / 2;
+        }
+        #ifdef DEBUG_DET
+        fprintf(stderr,"\t#L lb: %lld, ubForlb: %lld, prev: %lld\n", lb, ubForlb, prev);
+        #endif
+    }
+
+    //At this point we have narrowed down ub and lb to the lowest range
+    if(!is_first_branch(locks_file, test_case_id)) {
+        #ifdef DEBUG
+        fprintf(stderr, "silent exit for lb: %lld, ub: %lld\n", lb, ub);
+        #endif
+        klee_silent_exit(0);
+    }
+    #ifdef DEBUG
+    fprintf(stderr,"GOOD BRANCH  lb: %lld, ub: %lld\n", lb, ub);
+    #endif
+
+    FILE* fp = fopen(locks_file,"a");
+    fprintf(fp, "%s", test_case_id);
+    fclose(fp);
+#endif
+
     int64_t v; 
     switch(size)
     {
@@ -55,5 +173,4 @@ void print_symbolic(const char* name, uint64_t *val, char size)
         case 64: v = *(int64_t*)val; break;
     }
     printf("%s: %llx\n",name,v);
-
 }
