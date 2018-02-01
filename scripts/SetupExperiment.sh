@@ -36,7 +36,7 @@ else
 PARALLEL=""
 fi
 
-seq 10 | parallel $PARALLEL --no-notice  -L1 -I{}  "(cd \$PWD; $TOOL test{}.c 2> /dev/null)"
+seq 30 | parallel $PARALLEL --no-notice  -L1 -I{}  "(cd \$PWD; $TOOL test{}.c 2> /dev/null)"
 #seq 10 | parallel $PARALLEL --no-notice  -L1 -I{}  "echo \$PWD \`hostname -I\`"
 
 

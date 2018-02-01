@@ -80,7 +80,6 @@ int is_first_branch(char* locks_file, char* test_case_id) {
 //#define DEBUG_DET 0
 void print_symbolic(const char* name, int64_t *val, char size)
 {
-    return;
 #ifdef LOWEST_SOLUTION
     int64_t ub, lb, lbForUb, ubForlb, prev, h;
     switch(size)

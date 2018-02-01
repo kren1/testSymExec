@@ -16,6 +16,6 @@ esac
 
 export EXPERIMENT_LOG
 
-ls | grep -P "test\d+\.c$" | sort -V | parallel -L1 -j4  --no-notice $EXP 2> $NULL
+ls | grep -P "test\d+\.c$" | sort -V | parallel -L1 -j2  --no-notice $EXP 2> $NULL
 
 $DIR_NAME/utils/getEnvConfig.sh $EXPERIMENT_LOG
