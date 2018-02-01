@@ -21,12 +21,13 @@ public:
 
 class GlobalTuatologyFG : public FactGenerator {
 public:
-    GlobalTuatologyFG(std::vector<std::tuple<std::string,uint64_t, std::string>> &gv) : global_vars(gv) {
+    GlobalTuatologyFG(std::vector<std::tuple<std::string,uint64_t, std::string>> &gv) : global_vars(gv), dis(0, gv.size() -1)  {
         seed.seed(34534530);
     } 
     virtual std::string getNextTrue() {
         if(global_vars.size() == 0) return "( 1 == 1 )";
-        auto rnd_global_var = global_vars.back(); //TODO: implemnt randomnes
+        //auto rnd_global_var = global_vars.back(); //TODO: implemnt randomnes
+        auto rnd_global_var = global_vars[dis(seed)]; //TODO: implemnt randomnes
         std::string name = std::get<0>(rnd_global_var);
         
         uint32_t num = bitRnd(seed);
@@ -40,6 +41,7 @@ public:
     }
 private:
     std::vector<std::tuple<std::string,uint64_t, std::string>> &global_vars;
+    std::uniform_int_distribution<> dis;
     std::uniform_int_distribution<uint8_t> bitRnd;
     std::mt19937 seed;
 };
@@ -47,9 +49,10 @@ private:
 
 class ConditionInjector : public MatchFinder::MatchCallback {
 public:
-  ConditionInjector(Rewriter &Rewrite, FactGenerator &fg) : Rewrite(Rewrite), factGen(fg) {}
+  ConditionInjector(Rewriter &Rewrite, FactGenerator &fg) : Rewrite(Rewrite),  factGen(fg), seed(254345), coinFlip(0.5)  {}
 
   virtual void run(const MatchFinder::MatchResult &Result) {
+    if(coinFlip(seed)) return;
     if (const IfStmt *IfS = Result.Nodes.getNodeAs<IfStmt>("ifStmt")) {
       Rewrite.InsertText(IfS->getCond()->getLocStart(),
                          factGen.getNextTrue() + " & ",
@@ -61,6 +64,8 @@ public:
 private:
   Rewriter &Rewrite;
   FactGenerator &factGen;
+  std::mt19937 seed;
+  std::bernoulli_distribution coinFlip;
 };
 
 class GlobalVarsRecorder : public MatchFinder::MatchCallback {
