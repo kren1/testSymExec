@@ -22,7 +22,8 @@ void symbolize_and_constrain_u(void *var, int size, uint32_t value, char* name) 
         c_file = fopen(__klee__instr_filename, "w");
         fprintf(c_file, "#include <assert.h>\n");
         fprintf(c_file, "int main() {\n");
-//        fprintf(c_file, "\t megaInit();\n");
+        if(strstr(getenv("INSTRUMENTER"), "igress"))
+          fprintf(c_file, "\t megaInit();\n");
         snprintf(pref,10, "%s", "pref_");
     }
     char pref_name[40];
@@ -31,6 +32,7 @@ void symbolize_and_constrain_u(void *var, int size, uint32_t value, char* name) 
     fprintf(c_file, "\tsymbolize_and_constrain_u(&%s,sizeof %s,50, \"%s\");\n", name, name, name);
     fprintf(c_file, "\tsymbolize_and_constrain_u(&%s,sizeof %s,50, \"%s\");\n", pref_name, pref_name, pref_name);
     fprintf(c_file, "\tif(%s != %s) klee_silent_exit(0);\n\n", name, pref_name);
+
 
 
 }
