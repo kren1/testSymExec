@@ -16,6 +16,7 @@ char pref[10];
 
 
 void symbolize_and_constrain_u(void *var, int size, uint32_t value, char* name) {
+    if(call_cnt > 8) return;
     call_cnt++;
 
     if(call_cnt == 1) {
